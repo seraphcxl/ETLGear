@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * @author xiaoliangchen
  */
-public class MD5Utils {
+public class Md5Utils {
     public static String stringToMD5(String plainText) {
         byte[] secretBytes = null;
         try {

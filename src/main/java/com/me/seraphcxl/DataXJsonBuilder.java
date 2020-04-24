@@ -62,7 +62,7 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    private static JSONArray buildColumnJSONObjList(List<HiveColumn> columns, boolean useColumnSrcName) {
+    private static JSONArray buildColumnJsonObjList(List<HiveColumn> columns, boolean useColumnSrcName) {
         JSONArray result = new JSONArray();
         do {
             if (CollectionUtils.isEmpty(columns)) {
@@ -79,7 +79,7 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    private static JSONArray buildDataSourceJSONObjList(List<String> dataSrc, String tableName) {
+    private static JSONArray buildDataSourceJsonObjList(List<String> dataSrc, String tableName) {
         JSONArray result = new JSONArray();
         do {
             if (CollectionUtils.isEmpty(dataSrc) || StringUtils.isBlank(tableName)) {
@@ -97,7 +97,7 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    private static JSONObject buildMySQLReaderJSONObj(DataXTaskType taskType) {
+    private static JSONObject buildMysqlReaderJsonObj(DataXTaskType taskType) {
         JSONObject result = new JSONObject();
         do {
             result.fluentPut("stepType", "mysql")
@@ -108,8 +108,8 @@ public class DataXJsonBuilder {
             if (Param.splitPkColumn != null) {
                 parameter.fluentPut("splitPk", Param.splitPkColumn.getSrcName());
             }
-            parameter.fluentPut("column", buildColumnJSONObjList(Param.columns, true))
-                .fluentPut("connection", buildDataSourceJSONObjList(Param.source_dataSource, Param.source_tableName));
+            parameter.fluentPut("column", buildColumnJsonObjList(Param.columns, true))
+                .fluentPut("connection", buildDataSourceJsonObjList(Param.source_dataSource, Param.source_tableName));
             switch (taskType) {
                 case FullLoad: {
                     if (StringUtils.isBlank(Param.source_where)
@@ -117,14 +117,14 @@ public class DataXJsonBuilder {
                     ) {
                         switch (Param.createTimeColumn.getDataType()) {
                             case DATETIME: {
-                                parameter.fluentPut("where", String.format("%s >= date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s') "
-                                        + "AND %s < date_format(${end_ds}, '%%Y%%m%%d%%H%%i%%s')"
+                                parameter.fluentPut("where", String.format("%s > date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s') "
+                                        + "AND %s <= date_format(${end_ds}, '%%Y%%m%%d%%H%%i%%s')"
                                     , Param.createTimeColumn.getSrcName(), Param.createTimeColumn.getSrcName()));
                                 break;
                             }
                             case TIMESTAMP: {
-                                parameter.fluentPut("where", String.format("%s >= UNIX_TIMESTAMP(date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s')) "
-                                        + "AND %s < UNIX_TIMESTAMP(date_format(${end_ds}, '%%Y%%m%%d%%H%%i%%s'))"
+                                parameter.fluentPut("where", String.format("%s > UNIX_TIMESTAMP(date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s')) "
+                                        + "AND %s <= UNIX_TIMESTAMP(date_format(${end_ds}, '%%Y%%m%%d%%H%%i%%s'))"
                                     , Param.createTimeColumn.getSrcName(), Param.createTimeColumn.getSrcName()));
                                 break;
                             }
@@ -142,14 +142,14 @@ public class DataXJsonBuilder {
                     ) {
                         switch (Param.updateTimeColumn.getDataType()) {
                             case DATETIME: {
-                                parameter.fluentPut("where", String.format("%s >= date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s') "
-                                        + "AND %s < date_format(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), '%%Y-%%m-%%d %%H:%%i:%%s')"
+                                parameter.fluentPut("where", String.format("%s > date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s') "
+                                        + "AND %s <= date_format(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), '%%Y-%%m-%%d %%H:%%i:%%s')"
                                     , Param.updateTimeColumn.getSrcName(), Param.schedule_pull_schedule_minutes, Param.updateTimeColumn.getSrcName()));
                                 break;
                             }
                             case TIMESTAMP: {
-                                parameter.fluentPut("where", String.format("%s >= UNIX_TIMESTAMP(date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s')) "
-                                        + "AND %s < UNIX_TIMESTAMP(date_format(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), '%%Y-%%m-%%d %%H:%%i:%%s'))"
+                                parameter.fluentPut("where", String.format("%s > UNIX_TIMESTAMP(date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s')) "
+                                        + "AND %s <= UNIX_TIMESTAMP(date_format(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), '%%Y-%%m-%%d %%H:%%i:%%s'))"
                                     , Param.updateTimeColumn.getSrcName(), Param.schedule_pull_schedule_minutes, Param.updateTimeColumn.getSrcName()));
                                 break;
                             }
@@ -169,7 +169,7 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    private static JSONObject buildODPSWriterJSONObj() {
+    private static JSONObject buildOdpsWriterJsonObj() {
         JSONObject result = new JSONObject();
         do {
             result.fluentPut("stepType", "odps")
@@ -179,16 +179,16 @@ public class DataXJsonBuilder {
             parameter.fluentPut("truncate", "true")
                 .fluentPut("compress", "true")
                 .fluentPut("emptyAsNull", "false")
-                .fluentPut("partition", (Param.etl_partition + ", dw_plan_time = ${dw_plan_time}"))
+                .fluentPut("partition", (Param.etl_partition + ", dw__plan_time = ${dw__plan_time}"))
                 .fluentPut("datasource", Param.etl_odpsDataSource)
                 .fluentPut("table", Param.tableName_etlTableName)
-                .fluentPut("column", buildColumnJSONObjList(Param.columns, false));
+                .fluentPut("column", buildColumnJsonObjList(Param.columns, false));
             result.fluentPut("parameter", parameter);
         } while (false);
         return result;
     }
 
-    private static JSONObject buildDefaultJSONRootObj() {
+    private static JSONObject buildDefaultJsonRootObj() {
         JSONObject result = new JSONObject();
         do {
             result.fluentPut("type", "job")
@@ -217,15 +217,15 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    public static String createDataXJson4FullLoad(JSONObject param) {
+    public static String createDataXJson4FullLoad() {
         String result = null;
         do {
-            JSONObject root = buildDefaultJSONRootObj();
-            root.fluentPut("HupunComment", "dw_src_id=1 dw_plan_time=000000000000 start_ds=00000000000000 end_ds=99991231235959");
+            JSONObject root = buildDefaultJsonRootObj();
+            root.fluentPut("HupunComment", "dw__src_id=1 dw__plan_time=000000000000 start_ds=00000000000000 end_ds=99991231235959");
 
             JSONArray steps = new JSONArray();
-            steps.fluentAdd(buildMySQLReaderJSONObj(DataXTaskType.FullLoad))
-                .fluentAdd(buildODPSWriterJSONObj());
+            steps.fluentAdd(buildMysqlReaderJsonObj(DataXTaskType.FullLoad))
+                .fluentAdd(buildOdpsWriterJsonObj());
 
             root.fluentPut("steps", steps);
 
@@ -238,15 +238,15 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    public static String createDataXJson4BlockLoad(JSONObject param) {
+    public static String createDataXJson4BlockLoad() {
         String result = null;
         do {
-            JSONObject root = buildDefaultJSONRootObj();
-            root.fluentPut("HupunComment", "dw_src_id=1 dw_plan_time=$[yyyymmddhh24mi]");
+            JSONObject root = buildDefaultJsonRootObj();
+            root.fluentPut("HupunComment", "dw__src_id=1 dw__plan_time=$[yyyymmddhh24mi]");
 
             JSONArray steps = new JSONArray();
-            steps.fluentAdd(buildMySQLReaderJSONObj(DataXTaskType.BlockLoad))
-                .fluentAdd(buildODPSWriterJSONObj());
+            steps.fluentAdd(buildMysqlReaderJsonObj(DataXTaskType.BlockLoad))
+                .fluentAdd(buildOdpsWriterJsonObj());
 
             root.fluentPut("steps", steps);
 

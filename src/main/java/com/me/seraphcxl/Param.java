@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.me.seraphcxl.column.HiveColumn;
 import com.me.seraphcxl.column.HiveColumnBuilder;
 import com.me.seraphcxl.column.HiveMappingColumn;
-import com.me.seraphcxl.utils.MD5Utils;
+import com.me.seraphcxl.utils.Md5Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -157,7 +157,7 @@ public class Param {
             schedule_pull_schedule_minutes = schedule.getIntValue("pull_schedule_minutes");
             schedule_block_merge_schedule_minutes = schedule.getIntValue("block_merge_schedule_minutes");
 
-            paramMD5 = MD5Utils.stringToMD5(param.toJSONString());
+            paramMD5 = Md5Utils.stringToMD5(param.toJSONString());
 
             columns = HiveColumnBuilder.parseColumns(source_tableCreateSQL
                 , source_pkColumnNames , source_createTimeColumnName
@@ -206,8 +206,8 @@ public class Param {
      * @param param
      * @return
      */
-    public static Boolean checkJSONParam(JSONObject param) {
-        Boolean result = false;
+    public static int checkJsonParam(JSONObject param) {
+        int result = -1;
         do {
             if (param == null) {
                 break;
@@ -217,7 +217,7 @@ public class Param {
                 if (StringUtils.isBlank(paramMD5)) {
                     break;
                 }
-            } else if (!paramMD5.equals(MD5Utils.stringToMD5(param.toJSONString()))) {
+            } else if (!paramMD5.equals(Md5Utils.stringToMD5(param.toJSONString()))) {
                 break;
             }
 
@@ -233,7 +233,7 @@ public class Param {
                 , Param.schedule_pull_schedule_minutes > 0);
             Assert.assertTrue("allMerge_schedule_minutes > pull_schedule_minutes"
                 , Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes);
-            result = true;
+            result = 0;
         } while (false);
         return result;
     }

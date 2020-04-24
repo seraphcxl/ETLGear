@@ -1,6 +1,7 @@
 package com.me.seraphcxl.etlscriptgenerator;
 
 import com.alibaba.fastjson.JSONObject;
+import com.me.seraphcxl.DataXJsonBuilder;
 
 /**
  * 全量 ETL
@@ -33,6 +34,7 @@ public class FullEtlScriptGenerator implements EtlScriptGenerator {
     protected int generateDataXFullLoad() {
         int result = -1;
         do {
+            DataXJsonBuilder.createDataXJson4FullLoad();
             result = 0;
         } while (false);
         return result;

@@ -1,6 +1,7 @@
 package com.me.seraphcxl.etlscriptgenerator;
 
 import com.alibaba.fastjson.JSONObject;
+import com.me.seraphcxl.DataXJsonBuilder;
 
 /**
  * 批次 需要合并 ETL
@@ -36,6 +37,7 @@ public class BlockMergeEtlScriptGenerator implements EtlScriptGenerator {
     protected int generateDataXFullLoad() {
         int result = -1;
         do {
+            DataXJsonBuilder.createDataXJson4FullLoad();
             result = 0;
         } while (false);
         return result;
@@ -44,6 +46,7 @@ public class BlockMergeEtlScriptGenerator implements EtlScriptGenerator {
     protected int generateDataXBlockLoad() {
         int result = -1;
         do {
+            DataXJsonBuilder.createDataXJson4BlockLoad();
             result = 0;
         } while (false);
         return result;

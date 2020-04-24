@@ -12,13 +12,13 @@ public class EtlScriptGeneratorFactory {
             if (jobType == null) {
                 break;
             }
-            if (jobType.getFullOrBlock().equalsIgnoreCase("block")) {
+            if ("block".equalsIgnoreCase(jobType.getFullOrBlock())) {
                 if (jobType.isNeedMerge()) {
                     result = new BlockMergeEtlScriptGenerator();
                 } else {
                     result = new BlockStreamEtlScriptGenerator();
                 }
-            } else if (jobType.getFullOrBlock().equalsIgnoreCase("full")) {
+            } else if ("full".equalsIgnoreCase(jobType.getFullOrBlock())) {
                 result = new FullEtlScriptGenerator();
             }
         } while (false);

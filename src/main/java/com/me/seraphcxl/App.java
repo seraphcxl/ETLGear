@@ -30,9 +30,9 @@ public class App {
 
         String s = JsonUtils.readJsonFile(jsonFilePath);
         JSONObject jsonObj = JSON.parseObject(s);
-        String prettyJSONStr = JSON.toJSONString(jsonObj, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
+        String prettyJsonStr = JSON.toJSONString(jsonObj, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
             SerializerFeature.WriteDateUseDateFormat);
-        System.out.println(prettyJSONStr);
+        System.out.println(prettyJsonStr);
 
         do {
             if (Param.parseJobParam(jsonObj) != 0) {
@@ -41,7 +41,7 @@ public class App {
 
             EtlScriptGenerator etlScriptGenerator = EtlScriptGeneratorFactory.createETLScriptGenerator(Param.jobType);
             int tmpResult = etlScriptGenerator.generateScript(jsonObj);
-            if (tmpResult > 0 || tmpResult < 0) {
+            if (tmpResult != 0) {
                 System.out.println( "ETL gear ERROR!!!" );
             }
         } while (false);

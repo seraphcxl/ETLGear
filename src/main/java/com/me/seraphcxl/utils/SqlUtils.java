@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author xiaoliangchen
  */
-public class SQLUtils {
+public class SqlUtils {
 
     public static String sqlSeparator() {
         return "-- *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** --\n";
