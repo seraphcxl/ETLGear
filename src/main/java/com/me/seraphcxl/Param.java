@@ -1,5 +1,7 @@
 package com.me.seraphcxl;
 
+import static com.me.seraphcxl.OdsPartitionType.OneMonthAndPT;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me.seraphcxl.column.HiveColumn;
@@ -157,8 +159,6 @@ public class Param {
             schedule_pull_schedule_minutes = schedule.getIntValue("pull_schedule_minutes");
             schedule_block_merge_schedule_minutes = schedule.getIntValue("block_merge_schedule_minutes");
 
-            paramMD5 = Md5Utils.stringToMD5(param.toJSONString());
-
             columns = HiveColumnBuilder.parseColumns(source_tableCreateSQL
                 , source_pkColumnNames , source_createTimeColumnName
                 , source_updateTimeColumnName, source_splitPkColumnName
@@ -196,6 +196,7 @@ public class Param {
             fileName_etl_fullMerge = tableName_odsTableName + "_full_merge.hql";
             fileName_etl_blockMerge = tableName_odsTableName + "_block_merge.hql";
 
+            paramMD5 = Md5Utils.stringToMD5(param.toJSONString());
             result = 0;
         } while (false);
         return result;
@@ -212,6 +213,8 @@ public class Param {
             if (param == null) {
                 break;
             }
+
+            // 验证目前用的Param和传入的param是不是一致的
             if (StringUtils.isBlank(paramMD5)) {
                 parseJobParam(param);
                 if (StringUtils.isBlank(paramMD5)) {
@@ -221,18 +224,29 @@ public class Param {
                 break;
             }
 
+            // 验证目前用的Param自身的有效性
             Assert.assertTrue("StringUtils.isNotBlank(Param.odpsWorkSpaceName)"
                 , StringUtils.isNotBlank(Param.odpsWorkSpaceName));
             Assert.assertTrue("StringUtils.isNotBlank(Param.bizName)"
                 , StringUtils.isNotBlank(Param.bizName));
             Assert.assertTrue("StringUtils.isNotBlank(Param.tableName)"
                 , StringUtils.isNotBlank(Param.tableName));
-            Assert.assertTrue("ODPS dataSource list should less than 150"
-                , Param.source_dataSource.size() <= 150);
+            Assert.assertTrue("ODPS dataSource list should less than 125"
+                , Param.source_dataSource.size() <= 125);
             Assert.assertTrue("schedule_pull_schedule_minutes > 0"
                 , Param.schedule_pull_schedule_minutes > 0);
             Assert.assertTrue("allMerge_schedule_minutes > pull_schedule_minutes"
                 , Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes);
+
+            if ((Param.jobType.getOdsPartitionType() == OneMonthAndPT)
+                && "block".equals(Param.jobType.getFullOrBlock())
+                && Param.jobType.isNeedMerge()
+            ) {
+                // 检查 block， merge， ptType = 3 的参数
+                if (Param.createTimeColumn == null || Param.partitionKeyColumn == null) {
+                    break;
+                }
+            }
             result = 0;
         } while (false);
         return result;

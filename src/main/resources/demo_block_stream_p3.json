@@ -1,13 +1,13 @@
 {
     "ETLJobType": {
         "fullOrBlock": "block",
-        "needMerge": true,
+        "needMerge": false,
         "partitionType": 2
     },
 
     "odpsWorkSpaceName": "dc_ods",
     "bizName": "test_biz",
-    "tableName": "tbl_demo",
+    "tableName": "tbl_block_stream_demo",
 
     "source": {
         "tableCreateSQL": "CREATE TABLE `tbl_demo` (\n  `TP_OFF_ID` varchar(32) NOT NULL COMMENT '订单线下编号',\n  `TP_OID` varchar(64) NOT NULL COMMENT '订单 ID',\n  `TP_TID` varchar(64) NOT NULL COMMENT '父交易 ID    也就是淘宝上的购物车id,一笔交易多个订单',\n  `TP_ITEM_ID` varchar(64) NOT NULL COMMENT '商品 ID',\n  `TP_SKU_ID` varchar(64) NOT NULL COMMENT '商品规格 ID',\n  `TP_ITEM_TITLE` varchar(200) NOT NULL COMMENT '商品标题',\n  `TP_SKU_NAME` varchar(200) DEFAULT NULL COMMENT '商品规格名',\n  `TP_OUTER_ID` varchar(200) DEFAULT NULL COMMENT '商品外部 ID',\n  `TP_OUTER_SKU_ID` varchar(200) DEFAULT NULL COMMENT '商品外部规格 ID',\n  `TP_ORDER_STATUS` int(11) NOT NULL COMMENT '网店订单状态',\n  `TP_OFF_LINE_STATUS` int(11) NOT NULL COMMENT '线下订单状态',\n  `TP_PRICE` decimal(10,4) DEFAULT NULL,\n  `TP_ITEM_SIZE` int(11) NOT NULL COMMENT '商品数量',\n  `TP_PAYMENT` decimal(19,2) NOT NULL DEFAULT '0.00' COMMENT '实付金额',\n  `TP_REFUND_ID` varchar(20) DEFAULT NULL COMMENT '退款 ID',\n  `TP_SNAPSHOT` varchar(256) DEFAULT '' COMMENT '快照地址',\n  `TP_PICPATH` varchar(256) DEFAULT '' COMMENT '线上商品图片',\n  `COM_UID` varchar(32) NOT NULL COMMENT '公司编号',\n  `SYS_SHOP` varchar(32) NOT NULL COMMENT '网店编号',\n  `SYS_TRADE` varchar(32) DEFAULT NULL,\n  `SYS_ITEM_ID` varchar(32) DEFAULT NULL,\n  `SYS_SKU_ID` varchar(32) DEFAULT NULL,\n  `SYS_INDEX` bigint(20) DEFAULT '0' COMMENT '排序索引',\n  `SYS_ITEM_TYPE` tinyint(4) NOT NULL DEFAULT '0' COMMENT '商品类型',\n  `TP_ORDER_TYPE` tinyint(4) DEFAULT NULL,\n  `MODIFY_TYPE` varchar(32) DEFAULT NULL,\n  `GX_PRICE` decimal(10,4) DEFAULT NULL,\n  `GX_PAYMENT` decimal(19,2) DEFAULT NULL,\n  `sys_snapshot` varchar(400) DEFAULT NULL,\n  `TP_TID_SNAPSHOT` varchar(64) DEFAULT NULL COMMENT '保存订单原始单号',\n  `tp_consign_time` datetime DEFAULT NULL,\n  `tp_end_time` datetime DEFAULT NULL,\n  `tax_rate` tinyint(4) NOT NULL DEFAULT '0',\n  `index_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`TP_OFF_ID`),\n  UNIQUE KEY `TP_IDX_OID` (`TP_OID`,`COM_UID`,`TP_ORDER_TYPE`),\n  KEY `TP_INDEX_TID` (`TP_TID`,`SYS_SHOP`),\n  KEY `TP_IDX_STRADE` (`SYS_TRADE`),\n  KEY `TP_IDX_COM` (`COM_UID`),\n  KEY `TP_IDX_SHOP` (`SYS_SHOP`),\n  KEY `TP_IDX_OSTATUS` (`TP_ORDER_STATUS`,`COM_UID`),\n  KEY `TP_IDX_OFF` (`TP_OFF_LINE_STATUS`,`COM_UID`),\n  KEY `TP_IDX_ITEM_TID` (`TP_ITEM_ID`,`TP_SKU_ID`,`TP_TID`),\n  KEY `TP_INDEX_TID_SNAPSHOT` (`TP_TID_SNAPSHOT`,`SYS_SHOP`),\n  KEY `TP_IDX_SITEM` (`SYS_ITEM_ID`,`SYS_SKU_ID`),\n  KEY `IDX_SKU_ID` (`SYS_SKU_ID`),\n  KEY `IDX_INDEX_TIME` (`index_time`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='从 TOP 接口下载的订单信息'\n;",
@@ -19,7 +19,7 @@
         "updateTimeColumnName": "index_time",
         "splitPkColumnName": "",
 
-        "dataSourceTableName": "tbl_demo",
+        "dataSourceTableName": "tbl_block_stream_demo",
         "dataSource": [
             "scm_biz_0",
             "scm_biz_1",
