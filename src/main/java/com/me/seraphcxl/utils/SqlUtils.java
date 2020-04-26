@@ -1,6 +1,7 @@
 package com.me.seraphcxl.utils;
 
 import com.me.seraphcxl.MergeOrderBy;
+import com.me.seraphcxl.Param;
 import com.me.seraphcxl.column.HiveColumn;
 import com.me.seraphcxl.column.HiveMappingColumn;
 import java.util.ArrayList;
@@ -175,6 +176,42 @@ public class SqlUtils {
             }
             strBuilder.append(";\n");
             result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
+
+    public static String buildCreateODSTableStrWithPatitionType() {
+        String result = null;
+        do {
+            List<HiveColumn> partitions = null;
+            switch (Param.jobType.getOdsPartitionType()) {
+                case Day:{
+                    partitions = new ArrayList<>(Arrays.asList(HiveColumn.ds));
+                    break;
+                }
+                case PT:{
+                    partitions = new ArrayList<>(Arrays.asList(Param.partitionKeyColumn));
+                    break;
+                }
+                case OneMonthAndPT:{
+                    partitions = new ArrayList<>(Arrays.asList(HiveColumn.dm, Param.partitionKeyColumn));
+                    break;
+                }
+                default:
+                    break;
+            }
+            if (CollectionUtils.isEmpty(partitions)) {
+                break;
+            }
+            result = SqlUtils.buildCreateTableStr(
+                Param.odpsWorkSpaceName
+                , Param.tableName_odsTableName
+                , Param.columns
+                , Param.ods_mappingColumns
+                , String.format("%s %s ods 表", Param.bizName, Param.tableName)
+                , partitions
+                , -1
+            );
         } while (false);
         return result;
     }

@@ -136,8 +136,8 @@
             {
                 "mapping": "COALESCE(abs(hash(COM_UID)) % 200, 999)",
                 "dataType": "BIGINT",
-                "name": "dw__pt",
-                "comment": "dw__pt",
+                "name": "ods__pt",
+                "comment": "ods__pt",
                 "partitionKey": true
             }
         ],

@@ -1,6 +1,8 @@
 package com.me.seraphcxl;
 
+import static com.me.seraphcxl.OdsPartitionType.Day;
 import static com.me.seraphcxl.OdsPartitionType.OneMonthAndPT;
+import static com.me.seraphcxl.OdsPartitionType.PT;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -146,6 +148,7 @@ public class Param {
             } else {
                 ods_mappingColumns = new ArrayList<>(Arrays.asList());
             }
+
             JSONArray odsMergeOrderByArray = ods.getJSONArray("mergeOrderBy");
             if (CollectionUtils.isNotEmpty(odsMergeOrderByArray)) {
                 ods_mergeOrderBy = JSONObject.parseArray(odsMergeOrderByArray.toJSONString(), MergeOrderBy.class);
@@ -167,21 +170,44 @@ public class Param {
             ArrayList<HiveColumn> tmpList = new ArrayList<>(columns);
             tmpList.addAll(ods_mappingColumns);
             pkColumns = new ArrayList<>();
+            int pkColCount = 0;
+            int splitPkColCount = 0;
+            int createTimeColCount = 0;
+            int updateTimeColCount = 0;
+            int partitionKeyColCount = 0;
             for (HiveColumn col : tmpList) {
                 if (col.isPk()) {
                     pkColumns.add(col);
+                    ++pkColCount;
                 }
                 if (col.isSplitPk()) {
                     splitPkColumn = col;
+                    ++splitPkColCount;
                 }
                 if (col.isCreateTime()) {
                     createTimeColumn = col;
+                    ++createTimeColCount;
                 }
                 if (col.isUpdateTime()) {
                     updateTimeColumn = col;
+                    ++updateTimeColCount;
                 }
                 if (col.isPartitionKey()) {
                     partitionKeyColumn = col;
+                    ++partitionKeyColCount;
+                }
+            }
+
+            Assert.assertTrue("splitPkColCount < 2", splitPkColCount < 2);
+            Assert.assertTrue("createTimeColCount < 2", createTimeColCount < 2);
+            Assert.assertTrue("updateTimeColCount < 2", updateTimeColCount < 2);
+            Assert.assertTrue("partitionKeyColCount < 2", partitionKeyColCount < 2);
+
+            // 把 partition col 从mapping里拿走
+            for (HiveColumn col : ods_mappingColumns) {
+                if (col.isPartitionKey()) {
+                    ods_mappingColumns.remove(col);
+                    break;
                 }
             }
 
@@ -238,15 +264,27 @@ public class Param {
             Assert.assertTrue("allMerge_schedule_minutes > pull_schedule_minutes"
                 , Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes);
 
-            if ((Param.jobType.getOdsPartitionType() == OneMonthAndPT)
-                && "block".equals(Param.jobType.getFullOrBlock())
-                && Param.jobType.isNeedMerge()
-            ) {
-                // 检查 block， merge， ptType = 3 的参数
-                if (Param.createTimeColumn == null || Param.partitionKeyColumn == null) {
-                    break;
+            if ("block".equals(Param.jobType.getFullOrBlock()) && !Param.jobType.isNeedMerge()) {
+                // block stream 不检查分区字段
+            } else {
+                if (Param.jobType.getOdsPartitionType() == OneMonthAndPT) {
+                    // 检查 ptType = 2 的参数
+                    if (Param.createTimeColumn == null || Param.partitionKeyColumn == null) {
+                        break;
+                    }
+                } else if (Param.jobType.getOdsPartitionType() == Day) {
+                    // 检查 ptType = 0 的参数
+                    if (Param.createTimeColumn == null) {
+                        break;
+                    }
+                } else if (Param.jobType.getOdsPartitionType() == PT) {
+                    // 检查 ptType = 1 的参数
+                    if (Param.partitionKeyColumn == null) {
+                        break;
+                    }
                 }
             }
+
             result = 0;
         } while (false);
         return result;
