@@ -50,3 +50,4 @@ Servers/
 *.iml
 
 /out/
+/ETLScript/
