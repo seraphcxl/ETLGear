@@ -89,7 +89,7 @@ public class Param {
     public static String fileName_dataX_fullLoad = "";
     public static String fileName_dataX_blockLoad = "";
     public static String fileName_etl_createTable = "";
-    public static String fileName_etl_ChangeRecord = "";
+    public static String fileName_etl_changeRecord = "";
     public static String fileName_etl_fullMerge = "";
     public static String fileName_etl_blockMerge = "";
 
@@ -218,7 +218,7 @@ public class Param {
             fileName_dataX_fullLoad = "etl_input_" + bizName + "_" + tableName + "_full_load.json";
             fileName_dataX_blockLoad = "etl_input_" + bizName + "_" + tableName + "_block_load.json";
             fileName_etl_createTable = tableName_odsTableName + "_create_table.hql";
-            fileName_etl_ChangeRecord = tableName_odsTableName + "_change_record.hql";
+            fileName_etl_changeRecord = tableName_odsTableName + "_change_record.hql";
             fileName_etl_fullMerge = tableName_odsTableName + "_full_merge.hql";
             fileName_etl_blockMerge = tableName_odsTableName + "_block_merge.hql";
 

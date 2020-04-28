@@ -58,10 +58,8 @@ public class BlockStreamEtlScriptGenerator implements EtlScriptGenerator {
     protected int generateCreateTable() {
         int result = -1;
         do {
-            String fileName = "etl_createTable_" + Param.bizName + "_" + Param.tableName + ".hql";
-
             StringBuilder strBuilder = new StringBuilder();
-            strBuilder.append(SqlUtils.sqlComment(fileName)).append("\n");
+            strBuilder.append(SqlUtils.sqlComment(Param.fileName_etl_createTable)).append("\n");
             // etlTable
             strBuilder.append(SqlUtils.sqlSeparator())
                 .append(SqlUtils.buildDropTableStr(Param.odpsWorkSpaceName, Param.tableName_etlTableName))
@@ -79,7 +77,7 @@ public class BlockStreamEtlScriptGenerator implements EtlScriptGenerator {
                 .append("\n");
 
             strBuilder.append(SqlUtils.sqlSeparator());
-            if (FileUtils.saveETLSplitToFile(fileName, strBuilder.toString()) != 0) {
+            if (FileUtils.saveETLSplitToFile(Param.fileName_etl_createTable, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;

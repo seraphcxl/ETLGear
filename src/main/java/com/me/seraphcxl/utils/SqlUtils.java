@@ -305,4 +305,130 @@ public class SqlUtils {
         } while (false);
         return result;
     }
+
+    public static String getDSPatitionStr(HiveColumn col) {
+        String result = null;
+        do {
+            if (col == null || !col.isCreateTime()) {
+                break;
+            }
+            StringBuilder strBuilder = new StringBuilder();
+            switch (col.getDataType()) {
+                case DATETIME:{
+                    strBuilder.append(String.format("case when %s IS NULL then 19700101\n"
+                            + "when TO_CHAR(%s, 'yyyymmdd') <= '19700101' then 19700101\n"
+                            + "when TO_CHAR(%s, 'yyyymmdd') <= '20161231' then 20161231\n"
+                            + "when TO_CHAR(%s, 'yyyymmdd') >= '20300101' then 20300101\n"
+                            + "else TO_CHAR(%s, 'yyyymmdd') AS BIGINT) end as %s\n"
+                        , col.getName(), col.getName(), col.getName(), col.getName()
+                        , col.getName(), HiveColumn.ds.getName()));
+                    break;
+                }
+                case TIMESTAMP:{
+                    strBuilder.append(String.format("case when %s IS NULL then 19700101\n"
+                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') <= '19700101' then 19700101\n"
+                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') <= '20161231' then 20161231\n"
+                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') >= '20300101' then 20300101\n"
+                            + "else TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') end as %s\n"
+                        , col.getName(), col.getName(), col.getName(), col.getName()
+                        , col.getName(), HiveColumn.ds.getName()));
+                    break;
+                }
+                default:
+                    break;
+            }
+            result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
+
+    public static String getDMPatitionStr(HiveColumn col) {
+        String result = null;
+        do {
+            if (col == null || !col.isCreateTime()) {
+                break;
+            }
+            StringBuilder strBuilder = new StringBuilder();
+            switch (col.getDataType()) {
+                case DATETIME:{
+                    strBuilder.append(String.format("case when %s IS NULL then 197001\n"
+                            + "when TO_CHAR(%s, 'yyyymm') <= '197001' then 197001\n"
+                            + "when TO_CHAR(%s, 'yyyymm') <= '201612' then 201612\n"
+                            + "when TO_CHAR(%s, 'yyyymm') >= '203001' then 203001\n"
+                            + "else TO_CHAR(%s, 'yyyymm') end as %s\n"
+                        , col.getName(), col.getName(), col.getName(), col.getName()
+                        , col.getName(), HiveColumn.dm.getName()));
+                    break;
+                }
+                case TIMESTAMP:{
+                    strBuilder.append(String.format("case when %s IS NULL then 197001\n"
+                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') <= '197001' then 197001\n"
+                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') <= '201612' then 201612\n"
+                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') >= '203001' then 203001\n"
+                            + "else TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') end as %s\n"
+                        , col.getName(), col.getName(), col.getName(), col.getName()
+                        , col.getName(), HiveColumn.dm.getName()));
+                    break;
+                }
+                default:
+                    break;
+            }
+            result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
+
+    public static String getPartitionStrForInsertSql() {
+        String result = null;
+        do {
+            StringBuilder strBuilder = new StringBuilder();
+            switch (Param.jobType.getOdsPartitionType()) {
+                case Day:{
+                    strBuilder.append(String.format("PARTITION(%s)", HiveColumn.ds.getName()));
+                    break;
+                }
+                case PT:{
+                    strBuilder.append(String.format("PARTITION(%s)", Param.partitionKeyColumn.getName()));
+                    break;
+                }
+                case OneMonthAndPT:{
+                    strBuilder.append(String.format("PARTITION(%s, %s)", HiveColumn.dm.getName(), Param.partitionKeyColumn.getName()));
+                    break;
+                }
+                default:
+                    break;
+            }
+            result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
+
+    public static String getPartitionStrForSelect() {
+        String result = null;
+        do {
+            StringBuilder strBuilder = new StringBuilder();
+            switch (Param.jobType.getOdsPartitionType()) {
+                case Day:{
+                    strBuilder.append(SqlUtils.getDSPatitionStr(Param.createTimeColumn));
+                    break;
+                }
+                case PT:{
+                    strBuilder.append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
+                        Collections.singletonList(Param.partitionKeyColumn))));
+                    break;
+                }
+                case OneMonthAndPT:{
+                    strBuilder.append(SqlUtils.getDSPatitionStr(Param.createTimeColumn))
+                        .append("\n, ")
+                        .append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
+                            Collections.singletonList(Param.partitionKeyColumn))));
+                    break;
+                }
+                default:
+                    break;
+            }
+            result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
 }
