@@ -13,7 +13,7 @@ import java.util.Arrays;
  * 全量 ETL
  * @author xiaoliangchen
  */
-public class FullEtlScriptGenerator implements EtlScriptGenerator {
+public class FullEtlScriptGenerator extends AbstractEtlScriptGenerator {
 
     /**
      * 只有 full_load.json 和 full_merge.hql
@@ -74,38 +74,6 @@ public class FullEtlScriptGenerator implements EtlScriptGenerator {
 
             strBuilder.append(SqlUtils.sqlSeparator());
             if (FileUtils.saveETLSplitToFile(Param.fileName_etl_createTable, strBuilder.toString()) != 0) {
-                break;
-            }
-            result = 0;
-        } while (false);
-        return result;
-    }
-
-    protected int generateFullMerge() {
-        int result = -1;
-        do {
-            StringBuilder strBuilder = new StringBuilder();
-
-            ArrayList<HiveColumn> selectColumns = new ArrayList<>();
-            selectColumns.addAll(Param.columns);
-            selectColumns.addAll(Param.ods_mappingColumns);
-
-            strBuilder.append(SqlUtils.sqlComment(Param.fileName_etl_fullMerge)).append("\n")
-                .append(SqlUtils.sqlSeparator());
-
-            strBuilder.append(String.format("INSERT OVERWRITE TABLE %s.%s", Param.odpsWorkSpaceName, Param.tableName_odsTableName))
-                .append(" ").append(SqlUtils.getPartitionStrForInsertSql()).append("\n")
-                .append("SELECT\n")
-                .append(SqlUtils.buildSelectColumnStr(null, selectColumns))
-                .append(", ")
-                .append(SqlUtils.getPartitionStrForSelect())
-                .append(String.format("FROM %s.%s tblA\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName))
-                .append("WHERE 1 = 1\n")
-                .append(String.format("AND %s IS NOT NULL\nAND %s = '000000000000'\n", HiveColumn.dw__src_id.getName(), HiveColumn.dw__plan_time.getName()))
-                .append(";\n\n")
-            ;
-
-            if (FileUtils.saveETLSplitToFile(Param.fileName_etl_fullMerge, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;

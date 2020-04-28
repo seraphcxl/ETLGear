@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.me.seraphcxl.column.HiveColumn;
 import com.me.seraphcxl.column.HiveColumnBuilder;
 import com.me.seraphcxl.column.HiveMappingColumn;
+import com.me.seraphcxl.datatype.HiveDataType;
 import com.me.seraphcxl.utils.Md5Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -209,6 +210,11 @@ public class Param {
                     ods_mappingColumns.remove(col);
                     break;
                 }
+            }
+
+            if (jobType.getOdsPartitionType() == OneMonthAndPT && partitionKeyColumn != null) {
+                HiveColumn.dw__pt = new HiveColumn("dw__pt", HiveDataType.STRING,
+                    "dm__pt");
             }
 
             tableName_etlTableName = "t_etl_" + bizName + "_" + tableName + "_h";

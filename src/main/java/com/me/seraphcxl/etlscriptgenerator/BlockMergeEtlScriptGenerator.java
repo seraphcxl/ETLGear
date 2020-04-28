@@ -13,7 +13,7 @@ import java.util.Arrays;
  * 批次 需要合并 ETL
  * @author xiaoliangchen
  */
-public class BlockMergeEtlScriptGenerator implements EtlScriptGenerator {
+public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
 
     @Override
     public int generateScript(JSONObject param) {
@@ -32,6 +32,10 @@ public class BlockMergeEtlScriptGenerator implements EtlScriptGenerator {
                 break;
             }
             result = generateFullMerge();
+            if (result < 0) {
+                break;
+            }
+            result = generateBlockChangeRecord();
             if (result < 0) {
                 break;
             }
@@ -109,7 +113,7 @@ public class BlockMergeEtlScriptGenerator implements EtlScriptGenerator {
         return result;
     }
 
-    protected int generateFullMerge() {
+    protected int generateBlockChangeRecord() {
         int result = -1;
         do {
             result = 0;

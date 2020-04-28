@@ -14,6 +14,7 @@ public class HiveColumn extends AbstractColumn {
         "年月日 20200101");
     public static final HiveColumn dm = new HiveColumn("dm", HiveDataType.BIGINT,
         "年月 202001");
+    public static HiveColumn dw__pt = null;
 
     private String srcName;
     private HiveDataType dataType;

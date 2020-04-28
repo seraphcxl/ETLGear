@@ -194,7 +194,8 @@ public class SqlUtils {
                     break;
                 }
                 case OneMonthAndPT:{
-                    partitions = new ArrayList<>(Arrays.asList(HiveColumn.dm, Param.partitionKeyColumn));
+                    partitions = new ArrayList<>(Arrays.asList(HiveColumn.dm
+                        , Param.partitionKeyColumn, HiveColumn.dw__pt));
                     break;
                 }
                 default:
@@ -306,7 +307,7 @@ public class SqlUtils {
         return result;
     }
 
-    public static String getDSPatitionStr(HiveColumn col) {
+    public static String getDSPartitionStr(HiveColumn col) {
         String result = null;
         do {
             if (col == null || !col.isCreateTime()) {
@@ -319,9 +320,9 @@ public class SqlUtils {
                             + "when TO_CHAR(%s, 'yyyymmdd') <= '19700101' then 19700101\n"
                             + "when TO_CHAR(%s, 'yyyymmdd') <= '20161231' then 20161231\n"
                             + "when TO_CHAR(%s, 'yyyymmdd') >= '20300101' then 20300101\n"
-                            + "else TO_CHAR(%s, 'yyyymmdd') AS BIGINT) end as %s\n"
+                            + "else CAST(TO_CHAR(%s, 'yyyymmdd') AS BIGINT) end"
                         , col.getName(), col.getName(), col.getName(), col.getName()
-                        , col.getName(), HiveColumn.ds.getName()));
+                        , col.getName()));
                     break;
                 }
                 case TIMESTAMP:{
@@ -329,9 +330,9 @@ public class SqlUtils {
                             + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') <= '19700101' then 19700101\n"
                             + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') <= '20161231' then 20161231\n"
                             + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') >= '20300101' then 20300101\n"
-                            + "else TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') end as %s\n"
+                            + "else CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') AS BIGINT) end"
                         , col.getName(), col.getName(), col.getName(), col.getName()
-                        , col.getName(), HiveColumn.ds.getName()));
+                        , col.getName()));
                     break;
                 }
                 default:
@@ -342,7 +343,7 @@ public class SqlUtils {
         return result;
     }
 
-    public static String getDMPatitionStr(HiveColumn col) {
+    public static String getDMPartitionStr(HiveColumn col) {
         String result = null;
         do {
             if (col == null || !col.isCreateTime()) {
@@ -355,9 +356,9 @@ public class SqlUtils {
                             + "when TO_CHAR(%s, 'yyyymm') <= '197001' then 197001\n"
                             + "when TO_CHAR(%s, 'yyyymm') <= '201612' then 201612\n"
                             + "when TO_CHAR(%s, 'yyyymm') >= '203001' then 203001\n"
-                            + "else TO_CHAR(%s, 'yyyymm') end as %s\n"
+                            + "else CAST(TO_CHAR(%s, 'yyyymm') AS BIGINT) end"
                         , col.getName(), col.getName(), col.getName(), col.getName()
-                        , col.getName(), HiveColumn.dm.getName()));
+                        , col.getName()));
                     break;
                 }
                 case TIMESTAMP:{
@@ -365,9 +366,9 @@ public class SqlUtils {
                             + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') <= '197001' then 197001\n"
                             + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') <= '201612' then 201612\n"
                             + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') >= '203001' then 203001\n"
-                            + "else TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') end as %s\n"
+                            + "else CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') AS BIGINT) end"
                         , col.getName(), col.getName(), col.getName(), col.getName()
-                        , col.getName(), HiveColumn.dm.getName()));
+                        , col.getName()));
                     break;
                 }
                 default:
@@ -392,7 +393,8 @@ public class SqlUtils {
                     break;
                 }
                 case OneMonthAndPT:{
-                    strBuilder.append(String.format("PARTITION(%s, %s)", HiveColumn.dm.getName(), Param.partitionKeyColumn.getName()));
+                    strBuilder.append(String.format("PARTITION(%s, %s, %s)", HiveColumn.dm.getName()
+                        , Param.partitionKeyColumn.getName(), HiveColumn.dw__pt.getName()));
                     break;
                 }
                 default:
@@ -409,7 +411,9 @@ public class SqlUtils {
             StringBuilder strBuilder = new StringBuilder();
             switch (Param.jobType.getOdsPartitionType()) {
                 case Day:{
-                    strBuilder.append(SqlUtils.getDSPatitionStr(Param.createTimeColumn));
+                    strBuilder.append(SqlUtils.getDSPartitionStr(Param.createTimeColumn))
+                        .append(String.format(" AS %s\n", HiveColumn.ds.getName()))
+                    ;
                     break;
                 }
                 case PT:{
@@ -418,10 +422,14 @@ public class SqlUtils {
                     break;
                 }
                 case OneMonthAndPT:{
-                    strBuilder.append(SqlUtils.getDSPatitionStr(Param.createTimeColumn))
-                        .append("\n, ")
+                    strBuilder.append(SqlUtils.getDMPartitionStr(Param.createTimeColumn))
+                        .append(String.format(" AS %s\n", HiveColumn.dm.getName()))
+                        .append(", ")
                         .append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
-                            Collections.singletonList(Param.partitionKeyColumn))));
+                            Collections.singletonList(Param.partitionKeyColumn))))
+                        .append(String.format(", CONCAT(%s, '__', %s) AS %s\n", SqlUtils.getDMPartitionStr(Param.createTimeColumn)
+                            , ((HiveMappingColumn)Param.partitionKeyColumn).getMapping(), HiveColumn.dw__pt.getName()))
+                    ;
                     break;
                 }
                 default:

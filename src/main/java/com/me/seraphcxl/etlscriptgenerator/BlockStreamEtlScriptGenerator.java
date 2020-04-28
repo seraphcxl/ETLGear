@@ -13,7 +13,7 @@ import java.util.Arrays;
  * 批次 流水 ETL
  * @author xiaoliangchen
  */
-public class BlockStreamEtlScriptGenerator implements EtlScriptGenerator {
+public class BlockStreamEtlScriptGenerator extends AbstractEtlScriptGenerator {
 
     /**
      * 有 full_load.json 和 block_load.json
