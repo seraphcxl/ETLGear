@@ -8,6 +8,7 @@ import com.me.seraphcxl.utils.FileUtils;
 import com.me.seraphcxl.utils.SqlUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * 批次 需要合并 ETL
@@ -116,6 +117,49 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
     protected int generateBlockChangeRecord() {
         int result = -1;
         do {
+            StringBuilder strBuilder = new StringBuilder();
+
+            ArrayList<HiveColumn> selectColumns = new ArrayList<>();
+            selectColumns.addAll(Param.columns);
+            selectColumns.addAll(Param.ods_mappingColumns);
+
+            strBuilder.append(SqlUtils.sqlComment(Param.fileName_etl_changeRecord)).append("\n")
+                .append(SqlUtils.sqlSeparator());
+
+            strBuilder.append(SqlUtils.sqlSeparator())
+                .append((String.format("INSERT OVERWRITE TABLE %s.%s PARTITION(%s)\n"
+                    , Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName, HiveColumn.dw__plan_time.getName())))
+                .append("SELECT\n")
+                .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
+                .append(", ")
+                .append(SqlUtils.getPartitionStrForSelect())
+                .append("FROM (\n")
+                .append("SELECT\n")
+                .append(SqlUtils.buildSelectColumnStr("tblA", Param.columns));
+            if (CollectionUtils.isNotEmpty(Param.ods_mappingColumns)) {
+                strBuilder.append(", ")
+                    .append(SqlUtils.buildSelectMappingColumnStr(Param.ods_mappingColumns));
+            }
+            strBuilder.append(", ")
+                .append(SqlUtils.buildRowNumberStr("tblA", Param.pkColumns, Param.ods_mergeOrderBy))
+                .append("\n")
+                .append(String.format("FROM %s.%s tblA\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName))
+                .append("WHERE 1 = 1\n")
+                .append(String.format("AND %s IS NOT NULL\n", HiveColumn.dw__src_id.getName()))
+                .append(String.format("AND %s > to_char(dateadd(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), (-1 * %s), 'mi'), 'yyyymmddhhmi')\n"
+                    , HiveColumn.dw__plan_time.getName()
+                    , (Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
+                .append(String.format("AND %s <= to_char(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), 'yyyymmddhhmi')\n", HiveColumn.dw__plan_time.getName()))
+                .append(") tblB\n")
+                .append("WHERE 1 = 1\n")
+                .append("AND  tblB.dw_seq = 1\n")
+                .append("-- LIMIT 999\n")
+                .append(";\n\n");
+
+//            String tmpStr = strBuilder.toString();
+            if (FileUtils.saveETLSplitToFile(Param.fileName_etl_changeRecord, strBuilder.toString()) != 0) {
+                break;
+            }
             result = 0;
         } while (false);
         return result;

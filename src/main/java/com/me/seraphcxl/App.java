@@ -17,8 +17,8 @@ public class App {
         String jsonFilePath = "";
 
         jsonFilePath = App.class.getClassLoader().getResource("demo_block_merge_p3.json").getPath();
-        jsonFilePath = App.class.getClassLoader().getResource("demo_block_stream_p3.json").getPath();
-        jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_p3.json").getPath();
+//        jsonFilePath = App.class.getClassLoader().getResource("demo_block_stream_p3.json").getPath();
+//        jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_p3.json").getPath();
 
         if (args.length >= 1) {
             if (!jsonFilePath.contains(File.separator)) {
