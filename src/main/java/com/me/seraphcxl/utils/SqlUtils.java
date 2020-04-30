@@ -97,35 +97,6 @@ public class SqlUtils {
         return result;
     }
 
-    public static String buildMergeSelectColumnStr(
-        String newTableName
-        , String oldTableName
-        , List<HiveColumn> columns
-    ) {
-        String result = null;
-        do {
-            if (CollectionUtils.isEmpty(columns)
-                || StringUtils.isBlank(newTableName)
-                || StringUtils.isBlank(oldTableName)
-            ) {
-                break;
-            }
-            StringBuilder strBuilder = new StringBuilder();
-            int idx = 0;
-            for (HiveColumn col : columns) {
-                if (idx > 0) {
-                    strBuilder.append(", ");
-                }
-                strBuilder.append(String.format("CASE WHEN %s.%s IS NOT NULL THEN %s.%s ELSE %s.%s END AS %s\n"
-                    , newTableName, col.getName(), newTableName, col.getName()
-                    , oldTableName, col.getName(), col.getName()));
-                ++idx;
-            }
-            result = strBuilder.toString();
-        } while (false);
-        return result;
-    }
-
     public static String buildDropTableStr(String dbName, String tableName) {
         String result = null;
         do {
@@ -251,56 +222,6 @@ public class SqlUtils {
             }
             strBuilder.append(") AS dw_seq");
             result = strBuilder.toString();
-        } while (false);
-        return result;
-    }
-
-    public static String buildJoinOnStr(
-        String newTableName
-        , String oldTableName
-        , List<HiveColumn> columns
-    ) {
-        String result = null;
-        do {
-            if (CollectionUtils.isEmpty(columns)) {
-                break;
-            }
-            StringBuilder strBuilder = new StringBuilder();
-            int idx = 0;
-            for (HiveColumn col : columns) {
-                if (idx > 0) {
-                    strBuilder.append("AND ");
-                }
-                strBuilder.append(String.format("%s.%s = %s.%s\n"
-                    , newTableName, col.getName(), oldTableName, col.getName()));
-                ++idx;
-            }
-            result = strBuilder.toString();
-        } while (false);
-        return result;
-    }
-
-    public static List<HiveColumn> getColumnsWithoutMappingColumns(
-        List<HiveColumn> columns
-        , List<HiveMappingColumn> mappingColumns
-    ) {
-        List<HiveColumn> result = null;
-        do {
-            result = new ArrayList<>(Arrays.asList(new HiveColumn[columns.size()]));
-            Collections.copy(result, columns);
-
-            ArrayList<String> mappingColumnNames = new ArrayList<>(mappingColumns.size());
-            for (HiveMappingColumn col : mappingColumns) {
-                mappingColumnNames.add(col.getName());
-            }
-
-            Iterator<HiveColumn> it = result.iterator();
-            while (it.hasNext()) {
-                HiveColumn col = it.next();
-                if (mappingColumnNames.indexOf(col.getName()) != -1) {
-                    it.remove();
-                }
-            }
         } while (false);
         return result;
     }

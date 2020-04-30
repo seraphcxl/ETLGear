@@ -45,7 +45,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
             ;
 
             strBuilder.append(SqlUtils.sqlSeparator());
-            if (FileUtils.saveETLSplitToFile(Param.fileName_etl_fullMerge, strBuilder.toString()) != 0) {
+            if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_fullMerge, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;
@@ -97,7 +97,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
 
             strBuilder.append(SqlUtils.sqlSeparator());
 //            String tmpStr = strBuilder.toString();
-            if (FileUtils.saveETLSplitToFile(Param.fileName_etl_changeRecord, strBuilder.toString()) != 0) {
+            if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_changeRecord, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;
@@ -175,7 +175,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
 
             strBuilder.append(SqlUtils.sqlSeparator());
 //            String tmpStr = strBuilder.toString();
-            if (FileUtils.saveETLSplitToFile(Param.fileName_etl_blockMerge, strBuilder.toString()) != 0) {
+            if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_blockMerge, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;

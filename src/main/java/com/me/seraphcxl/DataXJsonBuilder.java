@@ -20,48 +20,6 @@ public class DataXJsonBuilder {
         , BlockLoad
     }
 
-    public static String buildETLColumnsJSONStr(List<HiveColumn> columns) {
-        String result = null;
-        do {
-            if (CollectionUtils.isEmpty(columns)) {
-                break;
-            }
-
-            JSONArray jsonArray = new JSONArray();
-            for (HiveColumn col : columns) {
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.fluentPut("name", col.getName());
-                jsonObj.fluentPut("srcName", col.getSrcName());
-                jsonObj.fluentPut("dataType", col.getDataType());
-                jsonObj.fluentPut("comment", col.getComment());
-
-                if (col.isPk()) {
-                    jsonObj.fluentPut("pk", true);
-                }
-
-                if (col.isSplitPk()) {
-                    jsonObj.fluentPut("splitPk", true);
-                }
-
-                if (col.isCreateTime()) {
-                    jsonObj.fluentPut("createTime", true);
-                }
-
-                if (col.isUpdateTime()) {
-                    jsonObj.fluentPut("updateTime", true);
-                }
-
-                jsonArray.add(jsonObj);
-            }
-
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.fluentPut("column", jsonArray);
-
-            result = jsonObject.toJSONString();
-        } while (false);
-        return result;
-    }
-
     private static JSONArray buildColumnJsonObjList(List<HiveColumn> columns, boolean useColumnSrcName) {
         JSONArray result = new JSONArray();
         do {

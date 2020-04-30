@@ -55,20 +55,7 @@ public class FileUtils {
         return result;
     }
 
-    public static int saveDataXJsonToFile(String fileName, StringBuilder strBuilder) {
-        int result = -1;
-        do {
-            if (strBuilder == null || StringUtils.isBlank(fileName)) {
-                break;
-            }
-            String context = strBuilder.toString();
-
-            result = saveDataXJsonToFile(fileName, context);
-        } while (false);
-        return result;
-    }
-
-    public static int saveETLSplitToFile(String fileName, String context) {
+    public static int saveEtlSplitToFile(String fileName, String context) {
         int result = -1;
         do {
             if (StringUtils.isBlank(fileName)
@@ -112,16 +99,4 @@ public class FileUtils {
         return result;
     }
 
-    public static int saveETLSplitToFile(String fileName, StringBuilder strBuilder) {
-        int result = -1;
-        do {
-            if (strBuilder == null || StringUtils.isBlank(fileName)) {
-                break;
-            }
-            String context = strBuilder.toString();
-
-            result = saveETLSplitToFile(fileName, context);
-        } while (false);
-        return result;
-    }
 }
