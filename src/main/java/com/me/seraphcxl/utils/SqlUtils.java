@@ -141,7 +141,6 @@ public class SqlUtils {
         String dbName
         , String tableName
         , List<HiveColumn> columns
-        , List<HiveMappingColumn> mappingColumns
         , String tableComment
         , List<HiveColumn> partitions
         , int lifeCycle
@@ -157,10 +156,6 @@ public class SqlUtils {
             StringBuilder strBuilder = new StringBuilder();
             strBuilder.append(String.format("CREATE TABLE IF NOT EXISTS %s.%s (\n", dbName, tableName));
             strBuilder.append(buildCreateColumnStr(columns));
-            if (CollectionUtils.isNotEmpty(mappingColumns)) {
-                strBuilder.append(", ")
-                    .append(buildCreateColumnStr((List)mappingColumns));
-            }
             if (StringUtils.isNotBlank(tableComment)) {
                 strBuilder.append(String.format(") COMMENT '%s'\n", tableComment));
             } else {
@@ -180,9 +175,13 @@ public class SqlUtils {
         return result;
     }
 
-    public static String buildCreateODSTableStrWithPatitionType() {
+    public static String buildCreateODSTableStrWithPartitionType() {
         String result = null;
         do {
+            ArrayList<HiveColumn> selectColumns = new ArrayList<>();
+            selectColumns.addAll(Param.columns);
+            selectColumns.addAll(Param.ods_mappingColumns);
+
             List<HiveColumn> partitions = null;
             switch (Param.jobType.getOdsPartitionType()) {
                 case Day:{
@@ -207,8 +206,7 @@ public class SqlUtils {
             result = SqlUtils.buildCreateTableStr(
                 Param.odpsWorkSpaceName
                 , Param.tableName_odsTableName
-                , Param.columns
-                , Param.ods_mappingColumns
+                , selectColumns
                 , String.format("%s %s ods 表", Param.bizName, Param.tableName)
                 , partitions
                 , -1
@@ -316,21 +314,19 @@ public class SqlUtils {
             StringBuilder strBuilder = new StringBuilder();
             switch (col.getDataType()) {
                 case DATETIME:{
-                    strBuilder.append(String.format("case when %s IS NULL then 19700101\n"
-                            + "when TO_CHAR(%s, 'yyyymmdd') <= '19700101' then 19700101\n"
-                            + "when TO_CHAR(%s, 'yyyymmdd') <= '20161231' then 20161231\n"
-                            + "when TO_CHAR(%s, 'yyyymmdd') >= '20300101' then 20300101\n"
-                            + "else CAST(TO_CHAR(%s, 'yyyymmdd') AS BIGINT) end"
+                    strBuilder.append(String.format("CASE WHEN %s IS NULL OR CAST(TO_CHAR(%s, 'yyyymmdd') AS BIGINT) <= 19700101 THEN 19700101\n"
+                            + "WHEN CAST(TO_CHAR(%s, 'yyyymmdd') AS BIGINT) <= 20161231 THEN 20161231\n"
+                            + "WHEN CAST(TO_CHAR(%s, 'yyyymmdd') AS BIGINT) >= 20300101 THEN 20300101\n"
+                            + "ELSE CAST(TO_CHAR(%s, 'yyyymmdd') AS BIGINT) END"
                         , col.getName(), col.getName(), col.getName(), col.getName()
                         , col.getName()));
                     break;
                 }
                 case TIMESTAMP:{
-                    strBuilder.append(String.format("case when %s IS NULL then 19700101\n"
-                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') <= '19700101' then 19700101\n"
-                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') <= '20161231' then 20161231\n"
-                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') >= '20300101' then 20300101\n"
-                            + "else CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') AS BIGINT) end"
+                    strBuilder.append(String.format("CASE WHEN %s IS NULL OR CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') AS BIGINT) <= 19700101 THEN 19700101\n"
+                            + "WHEN CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') AS BIGINT) <= 20161231 THEN 20161231\n"
+                            + "WHEN CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') AS BIGINT) >= 20300101 THEN 20300101\n"
+                            + "ELSE CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymmdd') AS BIGINT) END"
                         , col.getName(), col.getName(), col.getName(), col.getName()
                         , col.getName()));
                     break;
@@ -352,21 +348,19 @@ public class SqlUtils {
             StringBuilder strBuilder = new StringBuilder();
             switch (col.getDataType()) {
                 case DATETIME:{
-                    strBuilder.append(String.format("case when %s IS NULL then 197001\n"
-                            + "when TO_CHAR(%s, 'yyyymm') <= '197001' then 197001\n"
-                            + "when TO_CHAR(%s, 'yyyymm') <= '201612' then 201612\n"
-                            + "when TO_CHAR(%s, 'yyyymm') >= '203001' then 203001\n"
-                            + "else CAST(TO_CHAR(%s, 'yyyymm') AS BIGINT) end"
+                    strBuilder.append(String.format("CASE WHEN %s IS NULL OR CAST(TO_CHAR(%s, 'yyyymm') AS BIGINT) <= 197001 THEN 197001\n"
+                            + "WHEN CAST(TO_CHAR(%s, 'yyyymm') AS BIGINT) <= 201612 THEN 201612\n"
+                            + "WHEN CAST(TO_CHAR(%s, 'yyyymm') AS BIGINT) >= 203001 THEN 203001\n"
+                            + "ELSE CAST(TO_CHAR(%s, 'yyyymm') AS BIGINT) END"
                         , col.getName(), col.getName(), col.getName(), col.getName()
                         , col.getName()));
                     break;
                 }
                 case TIMESTAMP:{
-                    strBuilder.append(String.format("case when %s IS NULL then 197001\n"
-                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') <= '197001' then 197001\n"
-                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') <= '201612' then 201612\n"
-                            + "when TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') >= '203001' then 203001\n"
-                            + "else CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') AS BIGINT) end"
+                    strBuilder.append(String.format("CASE WHEN %s IS NULL OR CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') AS BIGINT) <= 197001 THEN 197001\n"
+                            + "WHEN CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') AS BIGINT) <= 201612 THEN 201612\n"
+                            + "WHEN CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') AS BIGINT) >= 203001 THEN 203001\n"
+                            + "ELSE CAST(TO_CHAR(FROM_UNIXTIME(%s), 'yyyymm') AS BIGINT) END"
                         , col.getName(), col.getName(), col.getName(), col.getName()
                         , col.getName()));
                     break;

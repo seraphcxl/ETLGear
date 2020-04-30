@@ -69,7 +69,6 @@ public class BlockStreamEtlScriptGenerator extends AbstractEtlScriptGenerator {
                     Param.odpsWorkSpaceName
                     , Param.tableName_etlTableName
                     , Param.columns
-                    , new ArrayList<>()
                     , String.format("%s %s etl 增量同步表", Param.bizName, Param.tableName)
                     , new ArrayList<>(Arrays.asList(HiveColumn.dw__src_id, HiveColumn.dw__plan_time))
                     , -1

@@ -117,13 +117,13 @@ public class DataXJsonBuilder {
                     ) {
                         switch (Param.createTimeColumn.getDataType()) {
                             case DATETIME: {
-                                parameter.fluentPut("where", String.format("%s > date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s') "
+                                parameter.fluentPut("where", String.format("%s >= date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s') "
                                         + "AND %s <= date_format(${end_ds}, '%%Y%%m%%d%%H%%i%%s')"
                                     , Param.createTimeColumn.getSrcName(), Param.createTimeColumn.getSrcName()));
                                 break;
                             }
                             case TIMESTAMP: {
-                                parameter.fluentPut("where", String.format("%s > UNIX_TIMESTAMP(date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s')) "
+                                parameter.fluentPut("where", String.format("%s >= UNIX_TIMESTAMP(date_format(${start_ds}, '%%Y%%m%%d%%H%%i%%s')) "
                                         + "AND %s <= UNIX_TIMESTAMP(date_format(${end_ds}, '%%Y%%m%%d%%H%%i%%s'))"
                                     , Param.createTimeColumn.getSrcName(), Param.createTimeColumn.getSrcName()));
                                 break;
@@ -142,13 +142,13 @@ public class DataXJsonBuilder {
                     ) {
                         switch (Param.updateTimeColumn.getDataType()) {
                             case DATETIME: {
-                                parameter.fluentPut("where", String.format("%s > date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s') "
+                                parameter.fluentPut("where", String.format("%s >= date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s') "
                                         + "AND %s <= date_format(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), '%%Y-%%m-%%d %%H:%%i:%%s')"
                                     , Param.updateTimeColumn.getSrcName(), Param.schedule_pull_schedule_minutes, Param.updateTimeColumn.getSrcName()));
                                 break;
                             }
                             case TIMESTAMP: {
-                                parameter.fluentPut("where", String.format("%s > UNIX_TIMESTAMP(date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s')) "
+                                parameter.fluentPut("where", String.format("%s >= UNIX_TIMESTAMP(date_format(date_add(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), INTERVAL (-1 * %s) MINUTE), '%%Y-%%m-%%d %%H:%%i:%%s')) "
                                         + "AND %s <= UNIX_TIMESTAMP(date_format(str_to_date(${bdp.system.cyctime}, '%%Y%%m%%d%%H%%i%%s'), '%%Y-%%m-%%d %%H:%%i:%%s'))"
                                     , Param.updateTimeColumn.getSrcName(), Param.schedule_pull_schedule_minutes, Param.updateTimeColumn.getSrcName()));
                                 break;
