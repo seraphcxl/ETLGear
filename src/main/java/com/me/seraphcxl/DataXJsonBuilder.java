@@ -137,7 +137,7 @@ public class DataXJsonBuilder {
             parameter.fluentPut("truncate", "true")
                 .fluentPut("compress", "true")
                 .fluentPut("emptyAsNull", "false")
-                .fluentPut("partition", (Param.etl_partition + ", dw__plan_time = ${dw__plan_time}"))
+                .fluentPut("partition", (Param.etl_partition + ", dw__plan_time=${dw__plan_time}"))
                 .fluentPut("datasource", Param.etl_odpsDataSource)
                 .fluentPut("table", Param.tableName_etlTableName)
                 .fluentPut("column", buildColumnJsonObjList(Param.columns, false));

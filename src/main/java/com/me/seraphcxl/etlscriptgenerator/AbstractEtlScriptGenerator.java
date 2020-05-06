@@ -33,15 +33,21 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(SqlUtils.buildSelectColumnStr(null, selectColumns))
                 .append(", ")
                 .append(SqlUtils.getPartitionStrForSelect())
-                .append("FROM (")
+                .append("FROM (\n")
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr(null, Param.columns))
-                .append(", ")
-                .append(SqlUtils.buildSelectMappingColumnStr(Param.ods_mappingColumns))
-                .append(String.format("FROM %s.%s tblA\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName))
+                ;
+            if (CollectionUtils.isNotEmpty(Param.ods_mappingColumns)) {
+                strBuilder.append(", ")
+                    .append(SqlUtils.buildSelectMappingColumnStr(Param.ods_mappingColumns))
+                    .append("\n")
+                    ;
+            }
+
+            strBuilder.append(String.format("FROM %s.%s tblA\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName))
                 .append("WHERE 1 = 1\n")
                 .append(String.format("AND %s IS NOT NULL\nAND %s = '000000000000'\n", HiveColumn.dw__src_id.getName(), HiveColumn.dw__plan_time.getName()))
-                .append(");\n\n")
+                .append(") tbkB\n;\n\n")
             ;
 
             strBuilder.append(SqlUtils.sqlSeparator());
@@ -87,7 +93,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(String.format("AND %s IS NOT NULL\n", HiveColumn.dw__src_id.getName()))
                 .append(String.format("AND %s > to_char(dateadd(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), (-1 * %s), 'mi'), 'yyyymmddhhmi')\n"
                     , HiveColumn.dw__plan_time.getName()
-                    , (Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
+                    , (Param.schedule_block_merge_schedule_minutes < Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
                 .append(String.format("AND %s <= to_char(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), 'yyyymmddhhmi')\n", HiveColumn.dw__plan_time.getName()))
                 .append(") tblB\n")
                 .append("WHERE 1 = 1\n")
@@ -158,7 +164,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                     , Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName))
                 .append(String.format("AND %s > to_char(dateadd(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), (-1 * %s), 'mi'), 'yyyymmddhhmi')\n"
                     , HiveColumn.dw__plan_time.getName()
-                    , (Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
+                    , (Param.schedule_block_merge_schedule_minutes < Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
                 .append(String.format("AND %s <= to_char(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), 'yyyymmddhhmi')\n", HiveColumn.dw__plan_time.getName()))
                 .append(String.format("GROUP BY %s\n)\n", changePtCol.getName()))
                 .append(String.format("\nUNION ALL\n\nSELECT\n"))
@@ -166,7 +172,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(String.format("FROM %s.%s %s\nWHERE 1 = 1\n", Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName, "tblB"))
                 .append(String.format("AND %s > to_char(dateadd(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), (-1 * %s), 'mi'), 'yyyymmddhhmi')\n"
                     , HiveColumn.dw__plan_time.getName()
-                    , (Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
+                    , (Param.schedule_block_merge_schedule_minutes < Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
                 .append(String.format("AND %s <= to_char(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), 'yyyymmddhhmi')\n", HiveColumn.dw__plan_time.getName()))
                 .append(String.format(") %s\n", "tblC"))
                 .append(String.format(") %s\n", "tblD"))

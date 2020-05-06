@@ -16,11 +16,12 @@ public class App {
         System.out.println( "Welcome to ETL gear!" );
         String jsonFilePath = "";
 
-        jsonFilePath = App.class.getClassLoader().getResource("demo_block_merge_p3.json").getPath();
+//        jsonFilePath = App.class.getClassLoader().getResource("demo_block_merge_p3.json").getPath();
 //        jsonFilePath = App.class.getClassLoader().getResource("demo_block_stream_p3.json").getPath();
 //        jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_p3.json").getPath();
 
         if (args.length >= 1) {
+            System.out.println(args[0]);
             if (!jsonFilePath.contains(File.separator)) {
                 // 如果是相对路径，补充成绝对路径
                 jsonFilePath = System.getProperty("user.dir") + File.separator + args[0];

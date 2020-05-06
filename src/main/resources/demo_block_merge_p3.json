@@ -2,7 +2,7 @@
     "ETLJobType": {
         "fullOrBlock": "block",
         "needMerge": true,
-        "partitionType": 1
+        "partitionType": 2
     },
 
     "odpsWorkSpaceName": "dc_ods",
