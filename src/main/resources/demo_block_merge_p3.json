@@ -121,7 +121,7 @@
         "querySql": ""
     },
     "etl": {
-        "partition": "dw_src_id=${dw_src_id}",
+        "partition": "dw__src_id=${dw__src_id}",
         "odpsDataSource": "odps_first"
     },
     "ods": {
