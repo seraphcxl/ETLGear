@@ -26,6 +26,10 @@ public class HiveColumnBuilder {
             String endFlag = "\n  PRIMARY KEY";
             int startIdx = tableCreateSQL.indexOf(startFlag);
             int endIdx = tableCreateSQL.indexOf(endFlag);
+            if (endIdx == -1) {
+                System.out.println("没有找到数据库表的主键！！！");
+                break;
+            }
 
             String tmp = tableCreateSQL.substring(startIdx + startFlag.length(), endIdx).trim();
 

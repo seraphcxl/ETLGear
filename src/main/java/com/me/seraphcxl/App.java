@@ -18,7 +18,7 @@ public class App {
 
 //        jsonFilePath = App.class.getClassLoader().getResource("demo_block_merge_p3.json").getPath();
 //        jsonFilePath = App.class.getClassLoader().getResource("demo_block_stream_p3.json").getPath();
-//        jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_p3.json").getPath();
+        jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_p3.json").getPath();
 
         if (args.length >= 1) {
             System.out.println(args[0]);
