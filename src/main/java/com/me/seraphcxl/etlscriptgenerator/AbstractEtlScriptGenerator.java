@@ -78,6 +78,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
                 .append(", ")
                 .append(SqlUtils.getPartitionStrForSelect())
+                .append(", SUBSTR(${bdp.system.cyctime}, 1, 12)\n")
                 .append("FROM (\n")
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr("tblA", Param.columns));
