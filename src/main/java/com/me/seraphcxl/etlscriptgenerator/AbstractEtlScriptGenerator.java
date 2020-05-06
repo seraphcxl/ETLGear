@@ -78,6 +78,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
                 .append(", ")
                 .append(SqlUtils.getPartitionStrForSelect())
+                // plan_date 精确到分钟
                 .append(", SUBSTR(${bdp.system.cyctime}, 1, 12)\n")
                 .append("FROM (\n")
                 .append("SELECT\n")

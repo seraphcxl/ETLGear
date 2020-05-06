@@ -88,6 +88,9 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
 
             // odsTable
             strBuilder.append(SqlUtils.sqlSeparator())
+                .append(SqlUtils.buildDropTableStr(Param.odpsWorkSpaceName, Param.tableName_etlTableName))
+                .append("\n");
+            strBuilder.append(SqlUtils.sqlSeparator())
                 .append(SqlUtils.buildCreateODSTableStrWithPartitionType())
                 .append("\n");
 
