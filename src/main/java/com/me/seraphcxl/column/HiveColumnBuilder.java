@@ -23,7 +23,7 @@ public class HiveColumnBuilder {
         List<HiveColumn> result = new ArrayList<>(Arrays.asList());
         do {
             String startFlag = "(\n";
-            String endFlag = "\n  PRIMARY KEY";
+            String endFlag = "PRIMARY KEY";
             int startIdx = tableCreateSQL.indexOf(startFlag);
             int endIdx = tableCreateSQL.indexOf(endFlag);
             if (endIdx == -1) {
