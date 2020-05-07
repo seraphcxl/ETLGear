@@ -47,7 +47,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
             strBuilder.append(String.format("FROM %s.%s tblA\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName))
                 .append("WHERE 1 = 1\n")
                 .append(String.format("AND %s IS NOT NULL\nAND %s = '000000000000'\n", HiveColumn.dw__src_id.getName(), HiveColumn.dw__plan_time.getName()))
-                .append(") tbkB\n;\n\n")
+                .append(") tblB\n;\n\n")
             ;
 
             strBuilder.append(SqlUtils.sqlSeparator());
@@ -71,8 +71,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
             strBuilder.append(SqlUtils.sqlComment(Param.fileName_etl_changeRecord)).append("\n")
                 .append(SqlUtils.sqlSeparator());
 
-            strBuilder.append(SqlUtils.sqlSeparator())
-                .append((String.format("INSERT OVERWRITE TABLE %s.%s PARTITION(%s)\n"
+            strBuilder.append((String.format("INSERT OVERWRITE TABLE %s.%s PARTITION(%s)\n"
                     , Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName, HiveColumn.dw__plan_time.getName())))
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
