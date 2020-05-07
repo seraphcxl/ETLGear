@@ -174,7 +174,7 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
                     break;
             }
 
-            strBuilder.append(SqlUtils.sqlComment(Param.fileName_etl_blockMerge)).append("\n")
+            strBuilder.append(SqlUtils.sqlComment(Param.fileName_etl_fullMerge)).append("\n")
                 .append(SqlUtils.sqlSeparator());
 
             strBuilder.append(String.format("INSERT OVERWRITE TABLE %s.%s", Param.odpsWorkSpaceName, Param.tableName_odsTableName))
