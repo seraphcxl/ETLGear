@@ -276,16 +276,19 @@ public class Param {
                 if (Param.jobType.getOdsPartitionType() == OneMonthAndPT) {
                     // 检查 ptType = 2 的参数
                     if (Param.createTimeColumn == null || Param.partitionKeyColumn == null) {
+                        System.out.println( "缺少 createTimeColumn 或者 缺少 partitionKeyColumn ！！!" );
                         break;
                     }
                 } else if (Param.jobType.getOdsPartitionType() == Day) {
                     // 检查 ptType = 0 的参数
                     if (Param.createTimeColumn == null) {
+                        System.out.println( "缺少 createTimeColumn ！！!" );
                         break;
                     }
                 } else if (Param.jobType.getOdsPartitionType() == PT) {
                     // 检查 ptType = 1 的参数
                     if (Param.partitionKeyColumn == null) {
+                        System.out.println( "缺少 partitionKeyColumn ！！!" );
                         break;
                     }
                 }
@@ -293,6 +296,9 @@ public class Param {
 
             result = 0;
         } while (false);
+        if (result != 0) {
+            System.out.println( "参数验证错误！！!" );
+        }
         return result;
     }
 }
