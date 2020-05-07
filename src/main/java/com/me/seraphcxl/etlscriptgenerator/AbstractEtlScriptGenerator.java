@@ -32,7 +32,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr(null, selectColumns))
                 .append(", ")
-                .append(SqlUtils.getPartitionStrForSelect())
+                .append(SqlUtils.getPartitionStrForSelect(false))
                 .append("FROM (\n")
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr(null, Param.columns))
@@ -51,6 +51,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
             ;
 
             strBuilder.append(SqlUtils.sqlSeparator());
+//            String tmpStr = strBuilder.toString();
             if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_fullMerge, strBuilder.toString()) != 0) {
                 break;
             }
@@ -76,7 +77,7 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
                 .append(", ")
-                .append(SqlUtils.getPartitionStrForSelect())
+                .append(SqlUtils.getPartitionStrForSelect(false))
                 // plan_date 精确到分钟
                 .append(", SUBSTR(${bdp.system.cyctime}, 1, 12)\n")
                 .append("FROM (\n")
@@ -161,13 +162,13 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(SqlUtils.buildSelectColumnStr("tblA", selectColumns))
                 .append(String.format("FROM %s.%s %s\n", Param.odpsWorkSpaceName, Param.tableName_odsTableName, "tblA"))
                 .append(String.format("WHERE 1 = 1\nAND %s IN(\n", changePtCol.getName()))
-                .append(String.format("SELECT %s\nFROM %s.%s\nWHERE 1 = 1\n", changePtCol.getName()
+                .append(String.format("SELECT\n%s\nFROM %s.%s\nWHERE 1 = 1\n", changePtCol.getName()
                     , Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName))
                 .append(String.format("AND %s > to_char(dateadd(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), (-1 * %s), 'mi'), 'yyyymmddhhmi')\n"
                     , HiveColumn.dw__plan_time.getName()
                     , (Param.schedule_block_merge_schedule_minutes < Param.schedule_pull_schedule_minutes ? Param.schedule_block_merge_schedule_minutes + Param.schedule_pull_schedule_minutes : Param.schedule_block_merge_schedule_minutes)))
                 .append(String.format("AND %s <= to_char(to_date(${bdp.system.cyctime}, 'yyyymmddhhmiss'), 'yyyymmddhhmi')\n", HiveColumn.dw__plan_time.getName()))
-                .append(String.format("GROUP BY %s\n)\n", changePtCol.getName()))
+                .append(String.format("GROUP BY\n%s\n)\n", changePtCol.getName()))
                 .append(String.format("\nUNION ALL\n\nSELECT\n"))
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
                 .append(String.format("FROM %s.%s %s\nWHERE 1 = 1\n", Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName, "tblB"))

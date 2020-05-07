@@ -97,6 +97,26 @@ public class SqlUtils {
         return result;
     }
 
+    public static String buildGroupByMappingColumnStr(List<HiveMappingColumn> columns) {
+        String result = null;
+        do {
+            if (CollectionUtils.isEmpty(columns)) {
+                break;
+            }
+            StringBuilder strBuilder = new StringBuilder();
+            int idx = 0;
+            for (HiveMappingColumn col : columns) {
+                if (idx > 0) {
+                    strBuilder.append(", ");
+                }
+                strBuilder.append(String.format("%s\n", col.getMapping()));
+                ++idx;
+            }
+            result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
+
     public static String buildDropTableStr(String dbName, String tableName) {
         String result = null;
         do {
@@ -320,7 +340,7 @@ public class SqlUtils {
         return result;
     }
 
-    public static String getPartitionStrForSelect() {
+    public static String getPartitionStrForSelect(Boolean forPartitionPruning) {
         String result = null;
         do {
             StringBuilder strBuilder = new StringBuilder();
@@ -337,13 +357,56 @@ public class SqlUtils {
                     break;
                 }
                 case OneMonthAndPT:{
-                    strBuilder.append(SqlUtils.getDMPartitionStr(Param.createTimeColumn))
-                        .append(String.format(" AS %s\n", HiveColumn.dm.getName()))
-                        .append(", ")
-                        .append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
-                            Collections.singletonList(Param.partitionKeyColumn))))
-                        .append(String.format(", CONCAT(%s, '__', %s) AS %s\n", SqlUtils.getDMPartitionStr(Param.createTimeColumn)
+                    if (!forPartitionPruning) {
+                        strBuilder.append(SqlUtils.getDMPartitionStr(Param.createTimeColumn))
+                            .append(String.format(" AS %s\n", HiveColumn.dm.getName()))
+                            .append(", ")
+                            .append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
+                                Collections.singletonList(Param.partitionKeyColumn))))
+                            .append(", ")
+                            ;
+                    }
+                    strBuilder.append(String.format("CONCAT(%s, '__', %s) AS %s\n", SqlUtils.getDMPartitionStr(Param.createTimeColumn)
                             , ((HiveMappingColumn)Param.partitionKeyColumn).getMapping(), HiveColumn.dw__pt.getName()))
+                    ;
+                    break;
+                }
+                default:
+                    break;
+            }
+            result = strBuilder.toString();
+        } while (false);
+        return result;
+    }
+
+    public static String getPartitionStrForGroupBy(Boolean forPartitionPruning) {
+        String result = null;
+        do {
+            StringBuilder strBuilder = new StringBuilder();
+            switch (Param.jobType.getOdsPartitionType()) {
+                case Day:{
+                    strBuilder.append(SqlUtils.getDSPartitionStr(Param.createTimeColumn))
+                        .append("\n")
+                    ;
+                    break;
+                }
+                case PT:{
+                    strBuilder.append(SqlUtils.buildGroupByMappingColumnStr(new ArrayList(
+                        Collections.singletonList(Param.partitionKeyColumn))));
+                    break;
+                }
+                case OneMonthAndPT:{
+                    if (!forPartitionPruning) {
+                        strBuilder.append(SqlUtils.getDMPartitionStr(Param.createTimeColumn))
+                            .append("\n")
+                            .append(", ")
+                            .append(SqlUtils.buildGroupByMappingColumnStr(new ArrayList(
+                                Collections.singletonList(Param.partitionKeyColumn))))
+                            .append(", ")
+                            ;
+                    }
+                    strBuilder.append(String.format("CONCAT(%s, '__', %s)\n", SqlUtils.getDMPartitionStr(Param.createTimeColumn)
+                            , ((HiveMappingColumn)Param.partitionKeyColumn).getMapping()))
                     ;
                     break;
                 }
