@@ -75,7 +75,7 @@ public class FullEtlScriptGenerator extends AbstractEtlScriptGenerator {
                 .append("\n");
 
             strBuilder.append(SqlUtils.sqlSeparator());
-            if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_createTable, strBuilder.toString()) != 0) {
+            if (FileUtils.saveResultToFile(Param.fileName_etl_createTable, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;

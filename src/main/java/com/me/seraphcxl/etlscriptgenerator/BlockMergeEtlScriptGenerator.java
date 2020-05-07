@@ -128,7 +128,7 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
                 .append("\n");
 
             strBuilder.append(SqlUtils.sqlSeparator());
-            if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_createTable, strBuilder.toString()) != 0) {
+            if (FileUtils.saveResultToFile(Param.fileName_etl_createTable, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;
@@ -212,7 +212,7 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
 
             strBuilder.append(SqlUtils.sqlSeparator());
             String tmpStr = strBuilder.toString();
-            if (FileUtils.saveEtlSplitToFile(Param.fileName_etl_fullMerge, strBuilder.toString()) != 0) {
+            if (FileUtils.saveResultToFile(Param.fileName_etl_fullMerge, strBuilder.toString()) != 0) {
                 break;
             }
             result = 0;

@@ -189,7 +189,7 @@ public class DataXJsonBuilder {
 
             result = root.toJSONString();
 
-            if (FileUtils.saveDataXJsonToFile(Param.fileName_dataX_fullLoad, result) != 0) {
+            if (FileUtils.saveResultToFile(Param.fileName_dataX_fullLoad, result) != 0) {
                 break;
             }
         } while (false);
@@ -210,7 +210,7 @@ public class DataXJsonBuilder {
 
             result = root.toJSONString();
 
-            if (FileUtils.saveDataXJsonToFile(Param.fileName_dataX_blockLoad, result) != 0) {
+            if (FileUtils.saveResultToFile(Param.fileName_dataX_blockLoad, result) != 0) {
                 break;
             }
         } while (false);

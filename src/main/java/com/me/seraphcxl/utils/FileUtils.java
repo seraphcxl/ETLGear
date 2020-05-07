@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author xiaoliangchen
  */
 public class FileUtils {
-    public static int saveDataXJsonToFile(String fileName, String context) {
+    public static int saveResultToFile(String fileName, String context) {
         int result = -1;
         do {
             if (StringUtils.isBlank(fileName)
@@ -54,49 +54,4 @@ public class FileUtils {
         } while (false);
         return result;
     }
-
-    public static int saveEtlSplitToFile(String fileName, String context) {
-        int result = -1;
-        do {
-            if (StringUtils.isBlank(fileName)
-                || StringUtils.isBlank(context)
-                || StringUtils.isBlank(Param.odpsWorkSpaceName)
-                || StringUtils.isBlank(Param.bizName)
-                || StringUtils.isBlank(Param.tableName)
-            ) {
-                break;
-            }
-
-            try {
-                String dir = "ETLScript/";
-                File file = new File(dir);
-                if (!file.exists()) {
-                    file.mkdir();;
-                }
-
-                dir += String.format("%s.%s.%s/"
-                    , Param.odpsWorkSpaceName, Param.bizName, Param.tableName);
-                file = new File(dir);
-                if (!file.exists()) {
-                    file.mkdir();;
-                }
-
-                fileName = dir + fileName;
-                file = new File(fileName);
-                if (file.exists()) {
-                    file.delete();
-                }
-                file.createNewFile();
-                FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-                BufferedWriter bw = new BufferedWriter(fileWriter);
-                bw.write(context);
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            result = 0;
-        } while (false);
-        return result;
-    }
-
 }

@@ -93,6 +93,7 @@ public class Param {
     public static String fileName_etl_changeRecord = "";
     public static String fileName_etl_fullMerge = "";
     public static String fileName_etl_blockMerge = "";
+    public static String fileName_etl_paramJson = "";
 
     /** table name
      *
@@ -227,6 +228,7 @@ public class Param {
             fileName_etl_changeRecord = tableName_odsTableName + "_change_record.hql";
             fileName_etl_fullMerge = tableName_odsTableName + "_full_merge.hql";
             fileName_etl_blockMerge = tableName_odsTableName + "_block_merge.hql";
+            fileName_etl_paramJson = tableName_odsTableName + "_param.json";
 
             paramMD5 = Md5Utils.stringToMD5(param.toJSONString());
             result = 0;
