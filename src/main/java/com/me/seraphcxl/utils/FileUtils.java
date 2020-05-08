@@ -1,10 +1,7 @@
 package com.me.seraphcxl.utils;
 
 import com.me.seraphcxl.Param;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -43,15 +40,37 @@ public class FileUtils {
                     file.delete();
                 }
                 file.createNewFile();
-                FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-                BufferedWriter bw = new BufferedWriter(fileWriter);
-                bw.write(context);
-                bw.close();
+                writeFile(file, context);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             result = 0;
         } while (false);
         return result;
+    }
+
+    public static void readFile(File file) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+        }
+    }
+
+    public static void writeFile(File file, String content) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file);
+        OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+        osw.write(content);
+        osw.flush();
+    }
+
+    public static void appendFile(File file, String content) throws IOException {
+        // true to append
+        OutputStreamWriter out = new OutputStreamWriter(
+            new FileOutputStream(file, true),
+            "UTF-8"
+        );
+        out.write(content);
+        out.close();
     }
 }
