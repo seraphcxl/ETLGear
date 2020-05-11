@@ -1,0 +1,147 @@
+{
+    "ETLJobType": {
+        "fullOrBlock": "full",
+        "needMerge": true,
+        "partitionType": -1
+    },
+
+    "odpsWorkSpaceName": "dc_ods",
+    "bizName": "test_biz",
+    "tableName": "tbl_full_demo",
+
+    "source": {
+        "tableCreateSQL": "CREATE TABLE `tbl_demo` (\n  `TP_OFF_ID` varchar(32) NOT NULL COMMENT '订单线下编号',\n  `TP_OID` varchar(64) NOT NULL COMMENT '订单 ID',\n  `TP_TID` varchar(64) NOT NULL COMMENT '父交易 ID    也就是淘宝上的购物车id,一笔交易多个订单',\n  `TP_ITEM_ID` varchar(64) NOT NULL COMMENT '商品 ID',\n  `TP_SKU_ID` varchar(64) NOT NULL COMMENT '商品规格 ID',\n  `TP_ITEM_TITLE` varchar(200) NOT NULL COMMENT '商品标题',\n  `TP_SKU_NAME` varchar(200) DEFAULT NULL COMMENT '商品规格名',\n  `TP_OUTER_ID` varchar(200) DEFAULT NULL COMMENT '商品外部 ID',\n  `TP_OUTER_SKU_ID` varchar(200) DEFAULT NULL COMMENT '商品外部规格 ID',\n  `TP_ORDER_STATUS` int(11) NOT NULL COMMENT '网店订单状态',\n  `TP_OFF_LINE_STATUS` int(11) NOT NULL COMMENT '线下订单状态',\n  `TP_PRICE` decimal(10,4) DEFAULT NULL,\n  `TP_ITEM_SIZE` int(11) NOT NULL COMMENT '商品数量',\n  `TP_PAYMENT` decimal(19,2) NOT NULL DEFAULT '0.00' COMMENT '实付金额',\n  `TP_REFUND_ID` varchar(20) DEFAULT NULL COMMENT '退款 ID',\n  `TP_SNAPSHOT` varchar(256) DEFAULT '' COMMENT '快照地址',\n  `TP_PICPATH` varchar(256) DEFAULT '' COMMENT '线上商品图片',\n  `COM_UID` varchar(32) NOT NULL COMMENT '公司编号',\n  `SYS_SHOP` varchar(32) NOT NULL COMMENT '网店编号',\n  `SYS_TRADE` varchar(32) DEFAULT NULL,\n  `SYS_ITEM_ID` varchar(32) DEFAULT NULL,\n  `SYS_SKU_ID` varchar(32) DEFAULT NULL,\n  `SYS_INDEX` bigint(20) DEFAULT '0' COMMENT '排序索引',\n  `SYS_ITEM_TYPE` tinyint(4) NOT NULL DEFAULT '0' COMMENT '商品类型',\n  `TP_ORDER_TYPE` tinyint(4) DEFAULT NULL,\n  `MODIFY_TYPE` varchar(32) DEFAULT NULL,\n  `GX_PRICE` decimal(10,4) DEFAULT NULL,\n  `GX_PAYMENT` decimal(19,2) DEFAULT NULL,\n  `sys_snapshot` varchar(400) DEFAULT NULL,\n  `TP_TID_SNAPSHOT` varchar(64) DEFAULT NULL COMMENT '保存订单原始单号',\n  `tp_consign_time` datetime DEFAULT NULL,\n  `tp_end_time` datetime DEFAULT NULL,\n  `tax_rate` tinyint(4) NOT NULL DEFAULT '0',\n  `index_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`TP_OFF_ID`),\n  UNIQUE KEY `TP_IDX_OID` (`TP_OID`,`COM_UID`,`TP_ORDER_TYPE`),\n  KEY `TP_INDEX_TID` (`TP_TID`,`SYS_SHOP`),\n  KEY `TP_IDX_STRADE` (`SYS_TRADE`),\n  KEY `TP_IDX_COM` (`COM_UID`),\n  KEY `TP_IDX_SHOP` (`SYS_SHOP`),\n  KEY `TP_IDX_OSTATUS` (`TP_ORDER_STATUS`,`COM_UID`),\n  KEY `TP_IDX_OFF` (`TP_OFF_LINE_STATUS`,`COM_UID`),\n  KEY `TP_IDX_ITEM_TID` (`TP_ITEM_ID`,`TP_SKU_ID`,`TP_TID`),\n  KEY `TP_INDEX_TID_SNAPSHOT` (`TP_TID_SNAPSHOT`,`SYS_SHOP`),\n  KEY `TP_IDX_SITEM` (`SYS_ITEM_ID`,`SYS_SKU_ID`),\n  KEY `IDX_SKU_ID` (`SYS_SKU_ID`),\n  KEY `IDX_INDEX_TIME` (`index_time`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='从 TOP 接口下载的订单信息'\n;",
+        "pkColumnNames": [
+            "TP_OFF_ID",
+            "TP_OID"
+        ],
+        "createTimeColumnName": "create_time",
+        "updateTimeColumnName": "index_time",
+        "splitPkColumnName": "",
+
+        "dataSourceTableName": "tbl_full_demo",
+        "dataSource": [
+            "scm_biz_0",
+            "scm_biz_1",
+            "scm_biz_2",
+            "scm_biz_3",
+            "scm_biz_4",
+            "scm_biz_5",
+            "scm_biz_6",
+            "scm_biz_7",
+            "scm_biz_8",
+            "scm_biz_9",
+            "erp_biz_c_1",
+            "erp_biz_c_2",
+            "erp_biz_c_3",
+            "erp_biz_c_4",
+            "erp_biz_c_5",
+            "erp_biz_d_0",
+            "erp_biz_d_1",
+            "erp_biz_d_2",
+            "erp_biz_d_3",
+            "erp_biz_d_4",
+            "erp_biz_d_5",
+            "erp_biz_d_6",
+            "erp_biz_d_7",
+            "erp_biz_d_8",
+            "erp_biz_d_9",
+            "erp_biz_e_1",
+            "erp_biz_e_2",
+            "erp_biz_e_3",
+            "erp_biz_e_4",
+            "erp_biz_e_5",
+            "erp_biz_f_1",
+            "erp_biz_f_2",
+            "erp_biz_f_3",
+            "erp_biz_f_4",
+            "erp_biz_f_5",
+            "erp_biz_7_1",
+            "erp_biz_7_2",
+            "erp_biz_7_3",
+            "erp_biz_7_4",
+            "erp_biz_7_5",
+            "erp_biz_8_1",
+            "erp_biz_8_2",
+            "erp_biz_8_3",
+            "erp_biz_8_4",
+            "erp_biz_8_5",
+            "erp_biz_9_1",
+            "erp_biz_9_2",
+            "erp_biz_9_3",
+            "erp_biz_9_4",
+            "erp_biz_9_5",
+            "erp_biz_10_1",
+            "erp_biz_10_2",
+            "erp_biz_10_3",
+            "erp_biz_10_4",
+            "erp_biz_10_5",
+            "erp_biz_11_1",
+            "erp_biz_11_2",
+            "erp_biz_11_3",
+            "erp_biz_11_4",
+            "erp_biz_11_5",
+            "erp_biz_12_1",
+            "erp_biz_12_2",
+            "erp_biz_12_3",
+            "erp_biz_12_4",
+            "erp_biz_12_5",
+            "erp_biz_13_1",
+            "erp_biz_13_2",
+            "erp_biz_13_3",
+            "erp_biz_13_4",
+            "erp_biz_13_5",
+            "erp_biz_14_1",
+            "erp_biz_14_2",
+            "erp_biz_14_3",
+            "erp_biz_14_4",
+            "erp_biz_14_5",
+            "erp_biz_15_1",
+            "erp_biz_15_2",
+            "erp_biz_15_3",
+            "erp_biz_15_4",
+            "erp_biz_15_5",
+            "erp_biz_16_1",
+            "erp_biz_16_2",
+            "erp_biz_16_3",
+            "erp_biz_16_4",
+            "erp_biz_16_5",
+            "erp_biz_17_1",
+            "erp_biz_17_2",
+            "erp_biz_17_3",
+            "erp_biz_17_4",
+            "erp_biz_17_5",
+            "erp_biz_18_1",
+            "erp_biz_18_2",
+            "erp_biz_18_3",
+            "erp_biz_18_4",
+            "erp_biz_18_5"
+        ],
+        "where": "",
+        "querySql": ""
+    },
+    "etl": {
+        "partition": "dw__src_id=${dw__src_id}",
+        "odpsDataSource": "odps_first"
+    },
+    "ods": {
+        "mappingColumns": [
+            {
+                "mapping": "from_unixtime(SUBSTR(sys_index,1,10))",
+                "dataType": "DATETIME",
+                "name": "create_time",
+                "comment": "创建时间"
+            }
+        ],
+        "mergeOrderBy": [
+            {
+                "column": "index_time",
+                "orderBy": "DESC"
+            }
+        ]
+    },
+    "schedule": {
+        "pull_schedule_minutes": 60,
+        "block_merge_schedule_minutes": 1440
+    }
+}

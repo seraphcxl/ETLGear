@@ -31,7 +31,6 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                 .append(" ").append(SqlUtils.getPartitionStrForInsertSql()).append("\n")
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr(null, selectColumns))
-                .append(", ")
                 .append(SqlUtils.getPartitionStrForSelect(false))
                 .append("FROM (\n")
                 .append("SELECT\n")
@@ -76,7 +75,6 @@ public abstract class AbstractEtlScriptGenerator implements EtlScriptGenerator {
                     , Param.odpsWorkSpaceName, Param.tableName_odsChangeRecordTableName, HiveColumn.dw__plan_time.getName())))
                 .append("SELECT\n")
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectColumns))
-                .append(", ")
                 .append(SqlUtils.getPartitionStrForSelect(false))
                 // plan_date 精确到分钟
                 .append(", SUBSTR(${bdp.system.cyctime}, 1, 12)\n")

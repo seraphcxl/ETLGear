@@ -201,7 +201,6 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
                 .append(")\n")
                 .append(String.format("\nUNION ALL\n\nSELECT\n"))
                 .append(SqlUtils.buildSelectColumnStr("tblB", selectEtlColumns))
-                .append(", ")
                 .append(SqlUtils.getPartitionStrForSelect(false))
                 .append(String.format("FROM %s.%s %s\nWHERE 1 = 1\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName, "tblB"))
                 .append(String.format("AND %s IS NOT NULL\nAND %s = '000000000000'\n", HiveColumn.dw__src_id.getName(), HiveColumn.dw__plan_time.getName()))

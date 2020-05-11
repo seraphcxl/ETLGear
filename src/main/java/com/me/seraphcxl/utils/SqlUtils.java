@@ -175,6 +175,9 @@ public class SqlUtils {
 
             List<HiveColumn> partitions = null;
             switch (Param.jobType.getOdsPartitionType()) {
+                case NoPartition:{
+                    break;
+                }
                 case Day:{
                     partitions = new ArrayList<>(Arrays.asList(HiveColumn.ds));
                     break;
@@ -190,9 +193,6 @@ public class SqlUtils {
                 }
                 default:
                     break;
-            }
-            if (CollectionUtils.isEmpty(partitions)) {
-                break;
             }
             result = SqlUtils.buildCreateTableStr(
                 Param.odpsWorkSpaceName
@@ -319,6 +319,9 @@ public class SqlUtils {
         do {
             StringBuilder strBuilder = new StringBuilder();
             switch (Param.jobType.getOdsPartitionType()) {
+                case NoPartition:{
+                    break;
+                }
                 case Day:{
                     strBuilder.append(String.format("PARTITION(%s)", HiveColumn.ds.getName()));
                     break;
@@ -345,20 +348,26 @@ public class SqlUtils {
         do {
             StringBuilder strBuilder = new StringBuilder();
             switch (Param.jobType.getOdsPartitionType()) {
+                case NoPartition:{
+                    break;
+                }
                 case Day:{
-                    strBuilder.append(SqlUtils.getDSPartitionStr(Param.createTimeColumn))
+                    strBuilder.append(", ")
+                        .append(SqlUtils.getDSPartitionStr(Param.createTimeColumn))
                         .append(String.format(" AS %s\n", HiveColumn.ds.getName()))
                     ;
                     break;
                 }
                 case PT:{
-                    strBuilder.append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
-                        Collections.singletonList(Param.partitionKeyColumn))));
+                    strBuilder.append(", ")
+                        .append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
+                            Collections.singletonList(Param.partitionKeyColumn))));
                     break;
                 }
                 case OneMonthAndPT:{
                     if (!forPartitionPruning) {
-                        strBuilder.append(SqlUtils.getDMPartitionStr(Param.createTimeColumn))
+                        strBuilder.append(", ")
+                            .append(SqlUtils.getDMPartitionStr(Param.createTimeColumn))
                             .append(String.format(" AS %s\n", HiveColumn.dm.getName()))
                             .append(", ")
                             .append(SqlUtils.buildSelectMappingColumnStr(new ArrayList(
@@ -384,6 +393,10 @@ public class SqlUtils {
         do {
             StringBuilder strBuilder = new StringBuilder();
             switch (Param.jobType.getOdsPartitionType()) {
+                case NoPartition:{
+                    System.out.println("Error!!!");
+                    break;
+                }
                 case Day:{
                     strBuilder.append(SqlUtils.getDSPartitionStr(Param.createTimeColumn))
                         .append("\n")

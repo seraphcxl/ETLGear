@@ -5,7 +5,8 @@ package com.me.seraphcxl;
  */
 
 public enum OdsPartitionType {
-    Day(0, "自然天; BIGINT")
+    NoPartition(-1, "不分区")
+    , Day(0, "自然天; BIGINT")
     , PT(1, "字符串; STRING")
     , OneMonthAndPT(2, "一个月(yyyyMM) + Hash值; BIGINT, BIGINT/STRING")
     ;
@@ -29,6 +30,10 @@ public enum OdsPartitionType {
     public static OdsPartitionType toOdsPartitionType(int code) {
         OdsPartitionType type = Day;
         switch (code) {
+            case -1: {
+                type = NoPartition;
+                break;
+            }
             case 0: {
                 type = Day;
                 break;
