@@ -62,7 +62,10 @@ public enum MySqlDataType {
                 type = DATETIME;
             } else if (str.startsWith("timestamp")) {
                 type = TIMESTAMP;
+            } else if (str.startsWith("date")) {
+                type = DATETIME;
             }
+
         }
         return type;
     }

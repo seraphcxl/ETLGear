@@ -47,14 +47,7 @@ public class DataTypeConvertor {
                     break;
                 }
 
-                /**
-                 * hive 中PARQUET 目前无法很好的支持date 类型， 目前先转成string
-                 */
-                case DATE: {
-                    result =  HiveDataType.STRING;
-                    break;
-                }
-
+                case DATE:
                 case DATETIME:
                 case TIMESTAMP: {
                     result =  HiveDataType.DATETIME;
