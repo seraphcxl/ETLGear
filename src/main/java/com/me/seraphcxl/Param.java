@@ -269,8 +269,8 @@ public class Param {
                 , Param.source_dataSource.size() <= 125);
             Assert.assertTrue("schedule_pull_schedule_minutes > 0"
                 , Param.schedule_pull_schedule_minutes > 0);
-            Assert.assertTrue("allMerge_schedule_minutes > pull_schedule_minutes"
-                , Param.schedule_block_merge_schedule_minutes > Param.schedule_pull_schedule_minutes);
+            Assert.assertTrue("allMerge_schedule_minutes >= pull_schedule_minutes"
+                , Param.schedule_block_merge_schedule_minutes >= Param.schedule_pull_schedule_minutes);
 
             if ("block".equals(Param.jobType.getFullOrBlock()) && !Param.jobType.isNeedMerge()) {
                 // block stream 不检查分区字段
