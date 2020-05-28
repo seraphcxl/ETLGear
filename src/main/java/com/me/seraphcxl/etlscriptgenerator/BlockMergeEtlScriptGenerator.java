@@ -193,7 +193,7 @@ public class BlockMergeEtlScriptGenerator extends AbstractEtlScriptGenerator {
                 .append(String.format("FROM %s.%s %s\n", Param.odpsWorkSpaceName, Param.tableName_odsTableName, "tblA"))
                 .append(String.format("WHERE 1 = 1\nAND %s IN(\n", changePtCol.getName()))
                 .append("SELECT\n")
-                .append(SqlUtils.getPartitionStrForSelect(true))
+                .append(SqlUtils.getPartitionStrForGroupBy(true))
                 .append(String.format("FROM %s.%s\nWHERE 1 = 1\n", Param.odpsWorkSpaceName, Param.tableName_etlTableName))
                 .append(String.format("AND %s IS NOT NULL\nAND %s = '000000000000'\n", HiveColumn.dw__src_id.getName(), HiveColumn.dw__plan_time.getName()))
                 .append("GROUP BY\n")
