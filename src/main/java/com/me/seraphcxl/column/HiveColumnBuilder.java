@@ -27,7 +27,12 @@ public class HiveColumnBuilder {
             int startIdx = tableCreateSQL.indexOf(startFlag);
             int endIdx = tableCreateSQL.indexOf(endFlag);
             if (endIdx == -1) {
-                System.out.println("没有找到数据库表的主键！！！");
+                endFlag = "UNIQUE KEY";
+                endIdx = tableCreateSQL.indexOf(endFlag);
+                if (endIdx == -1) {
+                    System.out.println("没有找到数据库表的主键！！！");
+                    break;
+                }
                 break;
             }
 
