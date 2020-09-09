@@ -269,8 +269,8 @@ public class Param {
                 , StringUtils.isNotBlank(Param.tableName));
 //            Assert.assertTrue("ODPS dataSource list should less than 125"
 //                , Param.source_dataSource.size() <= 125);
-            Assert.assertTrue("50 <= source_dataSourceSlotCount <= 100"
-                , Param.source_dataSourceSlotCount >= 50 && Param.source_dataSourceSlotCount <= 100);
+            Assert.assertTrue("source_dataSourceSlotCount IN(25, 50, 100)"
+                , Param.source_dataSourceSlotCount == 25 || Param.source_dataSourceSlotCount == 50 || Param.source_dataSourceSlotCount == 100);
             Assert.assertTrue("schedule_pull_schedule_minutes > 0"
                 , Param.schedule_pull_schedule_minutes > 0);
             Assert.assertTrue("allMerge_schedule_minutes >= pull_schedule_minutes"
