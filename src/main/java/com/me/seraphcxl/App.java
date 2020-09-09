@@ -18,15 +18,42 @@ public class App {
         String jsonFilePath = "";
 
         if (args.length >= 1) {
-            System.out.println(args[0]);
-            if (!jsonFilePath.contains(File.separator)) {
-                // 如果是相对路径，补充成绝对路径
-                jsonFilePath = System.getProperty("user.dir") + File.separator + args[0];
+            for(int i = 0; i < args.length; i++){
+                System.out.println(args[i]);
             }
-            System.out.println(jsonFilePath);
+            String action = args[0];
+            switch (action.toUpperCase()) {
+                case "-H": {
+                    // Help
+                    System.out.println("1. -H: 帮助");
+                    System.out.println("2. -C: 创建 ETL 任务; java -jar ETLGear.jar -C demo.json");
+                    System.out.println("3. -M: 运维数据库实例列表");
+                    break;
+                }
+                case "-C": {
+                    // 创建 ETL 任务
+                    if (args.length == 1) {
+                        System.out.println("!!! 没有json参数文件 !!!");
+                    }
+
+                    if (!jsonFilePath.contains(File.separator)) {
+                        // 如果是相对路径，补充成绝对路径
+                        jsonFilePath = System.getProperty("user.dir") + File.separator + args[1];
+                    }
+                    System.out.println(jsonFilePath);
+                    break;
+                }
+                case "-M": {
+                    // 运维数据库实例列表
+                    int i = 0;
+                    break;
+                }
+                default:
+                    break;
+            }
         } else {
             System.out.println( "you should input a json file, we will show a demo." );
-//            jsonFilePath = App.class.getClassLoader().getResource("demo_block_merge_p3.json").getPath();
+            jsonFilePath = App.class.getClassLoader().getResource("demo_block_merge_p3.json").getPath();
 //            jsonFilePath = App.class.getClassLoader().getResource("demo_block_stream_p3.json").getPath();
 //            jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_p3.json").getPath();
 //            jsonFilePath = App.class.getClassLoader().getResource("demo_full_merge_no_pt.json").getPath();

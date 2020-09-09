@@ -33,7 +33,6 @@ public class HiveColumnBuilder {
                     System.out.println("没有找到数据库表的主键！！！");
                     break;
                 }
-                break;
             }
 
             String tmp = tableCreateSQL.substring(startIdx + startFlag.length(), endIdx).trim();

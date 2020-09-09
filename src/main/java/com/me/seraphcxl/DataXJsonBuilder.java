@@ -37,17 +37,17 @@ public class DataXJsonBuilder {
         return result;
     }
 
-    private static JSONArray buildDataSourceJsonObjList(List<String> dataSrc, String tableName) {
+    private static JSONArray buildDataSourceJsonObjList(int dataSourceSlotCount, String tableName) {
         JSONArray result = new JSONArray();
         do {
-            if (CollectionUtils.isEmpty(dataSrc) || StringUtils.isBlank(tableName)) {
+            if (StringUtils.isBlank(tableName)) {
                 break;
             }
-            for (String dataSrcName : dataSrc) {
+            for (int i = 0; i < dataSourceSlotCount; ++i) {
                 JSONObject jsonObj = new JSONObject();
-                jsonObj.fluentPut("datasource", dataSrcName);
+                jsonObj.fluentPut("datasource", String.format("${dag.foreach.current[" + i + "]}"));
                 JSONArray tables = new JSONArray();
-                tables.add(tableName);
+                tables.add("${table_name}");
                 jsonObj.fluentPut("table", tables);
                 result.add(jsonObj);
             }
@@ -67,7 +67,7 @@ public class DataXJsonBuilder {
                 parameter.fluentPut("splitPk", Param.splitPkColumn.getSrcName());
             }
             parameter.fluentPut("column", buildColumnJsonObjList(Param.columns, true))
-                .fluentPut("connection", buildDataSourceJsonObjList(Param.source_dataSource, Param.source_tableName));
+                .fluentPut("connection", buildDataSourceJsonObjList(Param.source_dataSourceSlotCount, Param.source_tableName));
             switch (taskType) {
                 case FullLoad: {
                     if (StringUtils.isBlank(Param.source_where)
@@ -179,7 +179,7 @@ public class DataXJsonBuilder {
         String result = null;
         do {
             JSONObject root = buildDefaultJsonRootObj();
-            root.fluentPut("HupunComment", "dw__src_id=1 dw__plan_time=000000000000 start_ds=00000000000000 end_ds=99991231235959");
+            root.fluentPut("HupunComment", "table_name=table_name dw__plan_time=000000000000 start_ds=00000000000000 end_ds=99991231235959 dw__src_id=1");
 
             JSONArray steps = new JSONArray();
             steps.fluentAdd(buildMysqlReaderJsonObj(DataXTaskType.FullLoad))
@@ -200,7 +200,7 @@ public class DataXJsonBuilder {
         String result = null;
         do {
             JSONObject root = buildDefaultJsonRootObj();
-            root.fluentPut("HupunComment", "dw__src_id=1 dw__plan_time=$[yyyymmddhh24mi]");
+            root.fluentPut("HupunComment", "table_name=table_name dw__plan_time=$[yyyymmddhh24mi] dw__src_id=1");
 
             JSONArray steps = new JSONArray();
             steps.fluentAdd(buildMysqlReaderJsonObj(DataXTaskType.BlockLoad))

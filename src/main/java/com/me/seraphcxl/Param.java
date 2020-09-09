@@ -54,7 +54,8 @@ public class Param {
     public static String source_updateTimeColumnName = null;
     public static String source_splitPkColumnName = null;
     // DataX 用的数据源，应该是 ODPS 的实例的数据库
-    public static List<String> source_dataSource = null;
+    public static int source_dataSourceSlotCount = 50;
+//    public static List<String> source_dataSource = null;
     // 数据源表名
     public static String source_tableName = "";
     // DataX用的自定义Where
@@ -127,10 +128,11 @@ public class Param {
             source_createTimeColumnName = source.getString("createTimeColumnName");
             source_updateTimeColumnName = source.getString("updateTimeColumnName");
             source_splitPkColumnName = source.getString("splitPkColumnName");
-            JSONArray srcDataSourceArray = source.getJSONArray("dataSource");
-            if (CollectionUtils.isNotEmpty(srcDataSourceArray)) {
-                source_dataSource = JSONObject.parseArray(srcDataSourceArray.toJSONString(), String.class);
-            }
+            source_dataSourceSlotCount = source.getIntValue("dataSourceSlotCount");
+//            JSONArray srcDataSourceArray = source.getJSONArray("dataSource");
+//            if (CollectionUtils.isNotEmpty(srcDataSourceArray)) {
+//                source_dataSource = JSONObject.parseArray(srcDataSourceArray.toJSONString(), String.class);
+//            }
             source_tableName = source.getString("dataSourceTableName");
             source_where = source.getString("where");
             source_querySql = source.getString("querySql");
@@ -265,8 +267,10 @@ public class Param {
                 , StringUtils.isNotBlank(Param.bizName));
             Assert.assertTrue("StringUtils.isNotBlank(Param.tableName)"
                 , StringUtils.isNotBlank(Param.tableName));
-            Assert.assertTrue("ODPS dataSource list should less than 125"
-                , Param.source_dataSource.size() <= 125);
+//            Assert.assertTrue("ODPS dataSource list should less than 125"
+//                , Param.source_dataSource.size() <= 125);
+            Assert.assertTrue("50 <= source_dataSourceSlotCount <= 100"
+                , Param.source_dataSourceSlotCount >= 50 && Param.source_dataSourceSlotCount <= 100);
             Assert.assertTrue("schedule_pull_schedule_minutes > 0"
                 , Param.schedule_pull_schedule_minutes > 0);
             Assert.assertTrue("allMerge_schedule_minutes >= pull_schedule_minutes"
