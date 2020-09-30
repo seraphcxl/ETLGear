@@ -47,7 +47,7 @@ public class DataXJsonBuilder {
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.fluentPut("datasource", String.format("${dag.foreach.current[" + i + "]}"));
                 JSONArray tables = new JSONArray();
-                tables.add("${table_name}");
+                tables.add(tableName);
                 jsonObj.fluentPut("table", tables);
                 result.add(jsonObj);
             }
