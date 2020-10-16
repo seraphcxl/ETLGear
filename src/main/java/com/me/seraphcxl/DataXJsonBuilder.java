@@ -179,7 +179,7 @@ public class DataXJsonBuilder {
         String result = null;
         do {
             JSONObject root = buildDefaultJsonRootObj();
-            root.fluentPut("HupunComment", "table_name=table_name dw__plan_time=000000000000 start_ds=00000000000000 end_ds=99991231235959 dw__src_id=1");
+            root.fluentPut("DataWorksComment", "dw__plan_time=000000000000 start_ds=00000000000000 end_ds=99991231235959");
 
             JSONArray steps = new JSONArray();
             steps.fluentAdd(buildMysqlReaderJsonObj(DataXTaskType.FullLoad))
@@ -200,7 +200,7 @@ public class DataXJsonBuilder {
         String result = null;
         do {
             JSONObject root = buildDefaultJsonRootObj();
-            root.fluentPut("HupunComment", "table_name=table_name dw__plan_time=$[yyyymmddhh24mi] dw__src_id=1");
+            root.fluentPut("DataWorksComment", "dw__plan_time=$[yyyymmddhh24mi]");
 
             JSONArray steps = new JSONArray();
             steps.fluentAdd(buildMysqlReaderJsonObj(DataXTaskType.BlockLoad))
